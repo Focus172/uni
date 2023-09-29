@@ -1,12 +1,18 @@
 /// ----------------------- BEGIN HEADER FILE ----------------------------- //
 
+#include <cerrno>
+#include <chrono>
 #include <cmath>
+#include <cstddef>
 #include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <optional>
 #include <ostream>
 #include <string>
 #include <thread>
+#include <climits> // tells what the word size is for the current arch with MAX_INT
 
 int main(int argc, char **argv);
 
@@ -20,6 +26,21 @@ int fib(int);
 int main(const int argc, char **argv) {
   std::cout << "Welcome to CSCI60!" << std::endl;
 
+  char *name = argv[0];
+
+  // printf("Function name is: %s\n", name);
+
+  int index = 0;
+  char *arg = argv[index];
+  while (arg != NULL) {
+        printf("Arg[%d] is %s\n", index, arg);
+    index++;
+    arg = argv[index];
+  }
+
+  srand(time(0));
+    // retruns between 0 and RAND_MAX
+  std::cout << "Random value: " << rand() << std::endl;
   // for (int i = 0; i < 5; i++) {
   // code in a loop
   // }
@@ -33,9 +54,14 @@ int main(const int argc, char **argv) {
   // The same thing
   std::string explicit_string = "teast";
   char implicit_string[] = "waho";
+  implicit_string[3] = 'q';
+
+  // char *c_string = "waho";
+  // c_string[3] = 'a';
+
   // \a == bell
   // \r == dos line return
-  printf("%s\n", "Enter a number, double, bool, and char.");
+  printf("Enter a number: ");
 
   // can be serperated by newline or space
   // std::cin >> d >> pi >> good >> c;
@@ -63,7 +89,19 @@ int main(const int argc, char **argv) {
   // std::pow(2, 4);
   // std::cos(2);
 
+  std::sqrt(-1);
+  if (errno != 0) {
+    printf("no sqrt on negatives\n");
+  }
+
   std::cout << (3.0 / 4.0) << std::endl;
+
+  // char str[80];
+  // char staaa[80] = "Value of pi";
+  // str[0] = 'a';
+  // str[1] = '\0';
+  // sprintf(str, "Value of Pi = %f", M_PI);
+  // puts(str);
 
   // std::operator<<(std::cout, "test\n");
 
@@ -86,15 +124,10 @@ int main(const int argc, char **argv) {
 
   // printf("Thread 1 says fib 41 is: %d\n", fib(41));
 
-  // char str[80];
-  // char staaa[80] = "Value of pi";
-  // str[0] = 'a';
-  // str[1] = '\0';
-  // sprintf(str, "Value of Pi = %f", M_PI);
-  // puts(str);
-
   t.join();
+
   return EXIT_SUCCESS;
+  // return EXIT_FAILURE;
 }
 
 /// Thread that is made to be an example of race condition
@@ -105,7 +138,7 @@ int callback(std::string *s) {
   // }
   // s->pop_back();
   puts("hi from thread 2");
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   // printf("Thread 2 says fib 42 is: %d\n", fib(42));
   return 0;
 }

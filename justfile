@@ -32,3 +32,13 @@ hw1:
     @just cmake > /dev/null
     ./build/hw1-sol1
     ./build/hw1-sol2
+
+# Builds and runs the second homework assignment
+hw2:
+    @just cmake > /dev/null
+    ./build/hw2-sol2
+
+lab2:
+    @just cmake > /dev/null
+    ./build/lab2-sol1
+    ./build/lab2-sol2
