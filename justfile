@@ -42,3 +42,7 @@ lab2:
     @just cmake > /dev/null
     ./build/lab2-sol1
     ./build/lab2-sol2
+
+lab3:
+    @just cmake > /dev/null
+    ./build/lab3-sol1

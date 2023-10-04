@@ -2,6 +2,7 @@
 
 #include <cerrno>
 #include <chrono>
+#include <climits> // tells what the word size is for the current arch with MAX_INT
 #include <cmath>
 #include <cstddef>
 #include <cstdio>
@@ -12,7 +13,6 @@
 #include <ostream>
 #include <string>
 #include <thread>
-#include <climits> // tells what the word size is for the current arch with MAX_INT
 
 int main(int argc, char **argv);
 
@@ -21,6 +21,32 @@ int fib(int);
 
 /// ------------------------- END HEADER FILE ----------------------------- //
 
+// class Circle {
+// public:
+//   double x = 0;
+//   double y = 0;
+//   double r = 0;
+//
+//   Circle();
+//   Circle(double x, double y) {
+//     this->x = x;
+//     this->y = y;
+//   }
+//   Circle(double x, double y, double r) {
+//     this->x = x;
+//     this->y = y;
+//     this->r = r;
+//   }
+//   double area() { return std::pow(this->r, 2) * M_PI; }
+// };
+
+// Circle get_circle(void) {
+//   Circle c;
+//   printf("Enter an (x, y) and radius: ");
+//   std::cin >> c.x >> c.y >> c.r;
+//   return c;
+// }
+
 // using namespace std; // for when you are dumb
 
 int main(const int argc, char **argv) {
@@ -28,18 +54,20 @@ int main(const int argc, char **argv) {
 
   char *name = argv[0];
 
+  // Circle c;
+
   // printf("Function name is: %s\n", name);
 
   int index = 0;
   char *arg = argv[index];
   while (arg != NULL) {
-        printf("Arg[%d] is %s\n", index, arg);
+    printf("Arg[%d] is %s\n", index, arg);
     index++;
     arg = argv[index];
   }
 
   srand(time(0));
-    // retruns between 0 and RAND_MAX
+  // retruns between 0 and RAND_MAX
   std::cout << "Random value: " << rand() << std::endl;
   // for (int i = 0; i < 5; i++) {
   // code in a loop

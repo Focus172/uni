@@ -15,6 +15,8 @@ add_executable(lab2-sol2 src/lab2/sol2.cpp)
 
 add_executable(hw2-sol2 src/homework2/sol2.cpp)
 
+add_executable(lab3-sol1 src/lab3/sol1.cpp)
+
 include(GNUInstallDirs)
 install(TARGETS uni
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
 bool quadratic_solver(double a, double b, double c, double &r1, double &r2) {
   double det = (b * b) - (4 * a * c);
   if (det < 0) {
-    printf("Deubg: no roots beacuse %f is less than 0\n", det);
+    // printf("Deubg: no roots beacuse %f is less than 0\n", det);
     r1 = 0;
     r2 = 0;
     return false;
