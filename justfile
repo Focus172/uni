@@ -1,5 +1,5 @@
 
-src_files := 'main.cpp'
+src_files := 'src/main.cpp'
 CC := 'clang'
 
 default:
@@ -8,8 +8,7 @@ default:
 # Builds all the code using clang
 build:
     mkdir -p build
-    # zig cc {{src_files}} -o build/uni
-    {{CC}} {{src_files}} -o build/uni -Wall -Wextra -Werror -O2 -pedantic
+    {{CC}} {{src_files}} -o build/uni # -Wall -Wextra -Werror -O2 -pedantic
 
 # Builds all the code using cmake
 cmake:
@@ -46,3 +45,28 @@ lab2:
 lab3:
     @just cmake > /dev/null
     ./build/lab3-sol1
+
+lab4:
+    @just cmake > /dev/null
+    ./build/lab4-sol1
+    ./build/lab4-sol2
+
+lab5:
+    @just cmake > /dev/null
+    ./build/lab5-sol1
+
+hw4:
+    @just cmake > /dev/null
+    ./build/hw4-sol1
+
+hw5:
+    @just cmake > /dev/null
+    ./build/hw5
+
+lab7:
+    @just cmake > /dev/null
+    ./build/lab7
+
+hw6:
+    @just cmake > /dev/null
+    ./build/hw6

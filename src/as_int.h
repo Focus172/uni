@@ -6,4 +6,4 @@
 
 std::optional<int> as_int(std::string *buf);
 
-#endif
+#endif // !ASINTH
