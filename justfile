@@ -70,3 +70,7 @@ lab7:
 hw6:
     @just cmake > /dev/null
     ./build/hw6
+
+hw7:
+    @just cmake > /dev/null
+    ./build/hw7

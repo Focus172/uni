@@ -30,6 +30,8 @@ add_executable(lab7 src/lab7/explain.cpp)
 
 add_executable(hw6 src/homework6/Biguint.cpp)
 
+add_executable(hw7 src/homework7/p3.cpp)
+
 # include(GNUInstallDirs)
 #
 # install(TARGETS uni
