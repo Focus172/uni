@@ -22,7 +22,7 @@ add_executable(lab4-sol2 src/lab4/triangle.cpp)
 
 add_executable(lab5-sol1 src/lab5/sol1.cpp)
 
-add_executable(hw4-sol1 src/homework4/speller.cpp)
+add_executable(hw4-p1 src/homework4/speller.cpp)
 
 add_executable(hw5 src/homework5/biguint.cpp)
 
@@ -30,7 +30,9 @@ add_executable(lab7 src/lab7/explain.cpp)
 
 add_executable(hw6 src/homework6/Biguint.cpp)
 
-add_executable(hw7 src/homework7/p3.cpp)
+add_executable(hw7 src/hw7/p3.cpp src/node.cpp src/hw7/test.cpp)
+
+add_executable(lab8 src/lab8/p1.cpp src/node.cpp)
 
 # include(GNUInstallDirs)
 #
