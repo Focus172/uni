@@ -1,26 +1,52 @@
+cxx         := "zig c++"
+cxx-args    := "-Wall -Wextra -Werror -pedantic -O2" # -O2
+# cxx-args    := ""
+
+alias default := all
+
 # lists avaliable actions
-default:
-    @just -l
+all: setup
+    just build src/main.cpp "{{cxx-args}}"
+    just build src/hw1/p1.cpp "{{cxx-args}}"
+    just build src/hw1/p3.cpp "{{cxx-args}}"
 
-# clang {{src_files}} -o build/uni -Wall -Wextra -Werror -O2 -pedantic
+    just build src/hw2/p1.cpp "{{cxx-args}}"
+    just build src/hw2/p2.cpp "{{cxx-args}}"
+    just build src/hw2/p3.cpp "{{cxx-args}}"
+    just build src/hw2/p4.cpp "{{cxx-args}}"
 
-# Builds all the code using cmake
-cmake:
-    #!/bin/sh
-    mkdir -p build
-    cd build
-    cmake ..
-    make all
+    just build src/hw3/p2.cpp "{{cxx-args}}"
 
-# Builds the code silencing all info
-sbuild:
-    @just cmake > /dev/null
+    just build src/hw4/p1.cpp "{{cxx-args}}"
+    just build src/hw4/p2.cpp "{{cxx-args}}"
+
+log-build:
+    just all 1>&2 2> build/build.log
 
 # Runs a homework thing
-hw number: sbuild
+run number: log-build
     ./build/hw{{number}}
 
 # lists args that can be passed to 'just hw'
 list-hw:
     @ ls -1 ./build | grep -e 'hw.-'  | sed 's/hw//'
+
+setup:
+    mkdir -p build
+    mkdir -p build/cache
+
+clean:
+    rm -r build
+
+
+build files args:
+    #!/bin/sh
+    #set -euxo pipefail
+    name=$(echo {{files}} | cut -d. -f1 | sed -e 's@src/@@' |tr '/' '-')
+    cache="build/cache/$name"
+    checksum="$(cat {{files}} | sha256sum)"
+    if [ "$(echo $checksum)" != "$(cat $cache 2>/dev/null)" ]; then
+        {{cxx}} {{cxx-args}} {{files}} -o "build/$name"
+        echo $checksum > "$cache"
+    fi
 

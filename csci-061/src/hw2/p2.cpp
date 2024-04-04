@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   std::string file;
   if (argc <= 1) {
     std::cout << "No input file. Using hard coded path." << std::endl;
-    file = "/home/focus/dox/School/13/wntr/csci-061/hw/src/hw2/p2";
+    file = "/home/focus/dox/school/13/wntr/csci-061/hw/src/hw2/p2";
   } else {
     file = argv[1];
   }

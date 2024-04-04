@@ -1,8 +1,8 @@
-# Uni
+# CSCI 61
+A collection of homework assignments.
 
-A Collection of homework assignments for university. To see what you can do type
+## Running
 ```bash
 just
 ```
-
 If you see something you want to do the run `just $CMD`.
