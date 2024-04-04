@@ -1,0 +1,26 @@
+# lists avaliable actions
+default:
+    @just -l
+
+# clang {{src_files}} -o build/uni -Wall -Wextra -Werror -O2 -pedantic
+
+# Builds all the code using cmake
+cmake:
+    #!/bin/sh
+    mkdir -p build
+    cd build
+    cmake ..
+    make all
+
+# Builds the code silencing all info
+sbuild:
+    @just cmake > /dev/null
+
+# Runs a homework thing
+hw number: sbuild
+    ./build/hw{{number}}
+
+# lists args that can be passed to 'just hw'
+list-hw:
+    @ ls -1 ./build | grep -e 'hw.-'  | sed 's/hw//'
+
