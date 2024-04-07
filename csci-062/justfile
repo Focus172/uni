@@ -10,11 +10,11 @@ setup:
 
 # Builds the main
 main: setup
-    just build "./src/main.cpp ./src/user.cpp ./src/network.cpp" "{{cxx-args}}" main
+    just build "./src/social_network.cpp ./src/user.cpp ./src/network.cpp" main
+    ./build/main
 
 clean:
     rm -r build
-
 
 tests: setup
     just build "./src/tests/test_user_1.cpp ./src/user.cpp" "test-user-1"
@@ -30,15 +30,22 @@ tests: setup
     just build "./src/tests/test_network_.cpp ./src/user.cpp ./src/network.cpp" "test-network"
 
     just build "./src/tests/test_network_add_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-add"
-    # just build "./src/tests/test_network_add_duplicate_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-adddup"
-    # just build "./src/tests/test_network_add_invalid_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-addbad"
-    # just build "./src/tests/test_network_add_user.cpp ./src/user.cpp ./src/network.cpp" "test-network-add-user"
-    # just build "./src/tests/test_network_delete_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-del-con"
-    # just build "./src/tests/test_network_delete_invalid_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-del-badcon"
-    # just build "./src/tests/test_network_delete_invalid_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-del-badcon"
+    just build "./src/tests/test_network_add_duplicate_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-adddup"
+    just build "./src/tests/test_network_add_invalid_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-addbad"
+    just build "./src/tests/test_network_add_user.cpp ./src/user.cpp ./src/network.cpp" "test-network-add-user"
+    just build "./src/tests/test_network_delete_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-del-con"
+    just build "./src/tests/test_network_delete_invalid_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-del-badcon"
+    just build "./src/tests/test_network_delete_invalid_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-del-badcon"
 
-test: tests
-    for f in build/test-*; do ./$f; done
+    just build "./src/tests/test_network_get_id.cpp ./src/user.cpp ./src/network.cpp" "test-network-del-badcon"
+    just build "./src/tests/test_network_get_user.cpp ./src/user.cpp ./src/network.cpp" "test-network-del-badcon"
+    just build "./src/tests/test_network_get_user_nullptr.cpp ./src/user.cpp ./src/network.cpp" "test-network-del-badcon"
+    just build "./src/tests/test_network_read_user.cpp ./src/user.cpp ./src/network.cpp" "test-network-read-user1"
+    just build "./src/tests/test_network_read_user2.cpp ./src/user.cpp ./src/network.cpp" "test-network-read-user2"
+
+test:
+    just tests # 2>./build/log
+    for f in build/test-*; do ./$f || exit; done
 
 build files name:
     #!/bin/sh
@@ -50,3 +57,4 @@ build files name:
         {{cxx}} {{cxx-args}} {{files}} -o "build/{{name}}" || exit
         echo $checksum > "$cache"
     fi
+
