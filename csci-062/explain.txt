@@ -1,0 +1,40 @@
+# Homework 1
+1. In the Network class, why use a vector of `User *` rather than `User`.
+A single pointer takes less memory than a User so that when data is moved in
+the underling buffer it requires less memory to be moved. In addition, pointers
+to Users will remain valid even if the container is modified.
+
+2. `User::getFriends` returns a reference to the set of friends. Why?
+One advantage is that the set doesn't need to be copied back to each caller.
+
+3. Explain one advantage of using a set, rather than a vector to store friends.
+A set has O(log n) complexity when adding an item if the tree is balanced
+compared to a vector which has O(n) complexity to search for an element.
+
+4. Explain what header guards are. Why use `#ifndef`, `#define`, and `#endif`?
+Header guards prevent circular imports and method re-declarations. Things that start with `#` are preprocessors, they edit code before it is passed to the compiler.
+`#ifndef`: a compiler macro to check if a given macro is defined and if not run some logic 
+`#define`: defines a marco. In this case, defines it to an empty string. 
+    Causes subsequent uses of `#ifndef` to return false.
+`#endif` : ends a block of code from an if statement. In this case, means use 
+    all code up to me if the `#ifndef` is true.
+
+5. Explain why this code snippet will not work.
+```cpp
+User u(id, name, zip, year, friends);
+users_.push_back(&u);
+```
+This code creates a User on the stack. The address of this points to the stack 
+and so after this stack frame ends it is reused by the cpu which this to point
+to garbage (or even malicious) data.
+
+6. Using big-O notation, in terms of the number of vertices n and/or the number of edges m, describe the runtime of the following methods: User::addFriend, Network::addConnection, Network::deleteConnection, Network::numUsers.
+User::addFriend             =   O(m)
+Network::addConnection      =   O(n + m)
+Network::deleteConnection   =   O(n + m)
+Network::numUsers           =   O(1)
+
+7. In hours, how much time did you spend on this assignment?
+4 Hours
+
+<!-- vim: ft=markdown -->

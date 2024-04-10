@@ -78,25 +78,19 @@ int Network::getId(std::string name) {
   return u->getId();
 }
 
-struct str {
-  char *ptr;
-  size_t len;
-};
-
-void debug_user(User *u) {
-  std::cout << "User { \n";
-  std::cout << "\tname: " << u->getName() << "\n";
-  std::cout << "\tid: " << u->getId() << "\n";
-  std::cout << "\tzip: " << u->getZip() << "\n";
-  std::cout << "\tyear: " << u->getYear() << "\n";
-  std::cout << "\tlinks: ";
-  for (auto link : u->getFriends()) {
-    std::cout << link << " ";
-  }
-  std::cout << "\n";
-  std::cout << "}" << std::endl;
-  // std::cout << "\tyear: " << u->getFriends() << "\n";
-}
+// void debug_user(User *u) {
+//   std::cout << "User { \n";
+//   std::cout << "\tname: " << u->getName() << "\n";
+//   std::cout << "\tid: " << u->getId() << "\n";
+//   std::cout << "\tzip: " << u->getZip() << "\n";
+//   std::cout << "\tyear: " << u->getYear() << "\n";
+//   std::cout << "\tlinks: ";
+//   for (auto link : u->getFriends()) {
+//     std::cout << link << " ";
+//   }
+//   std::cout << "\n";
+//   std::cout << "}" << std::endl;
+// }
 
 #define ASCII_ZERO 48
 
@@ -128,8 +122,8 @@ int read_links(FILE *f, std::set<int> &set) {
     default:
       int v = c - ASCII_ZERO;
       if (v < 0 || v > 9) {
-        std::cout << "bad part of int literal: " << c << "\n";
-        std::cout << "parsed as literal: " << v << "\n";
+        // std::cout << "bad part of int literal: " << c << "\n";
+        // std::cout << "parsed as literal: " << v << "\n";
         return 0;
       }
 
@@ -155,16 +149,15 @@ int Network::readUsers(char *fname) {
   switch (ret) {
   case EOF:
     code = -1;
-    std::cout << "expected an int found EOF\n";
+    // std::cout << "expected an int found EOF\n";
     goto cleanup;
   case 0:
     code = -1;
-    std::cout << "expected an int found other\n";
+    // std::cout << "expected an int found other\n";
     goto cleanup;
   default:
     break;
   }
-  std::cout << "nusers:" << nusers << "\n";
 
   for (;;) {
     int id;
@@ -185,13 +178,13 @@ int Network::readUsers(char *fname) {
 
     switch (ret) {
     case EOF:
-      std::cout << "Unexpected EOF in stream.\n";
+      // std::cout << "Unexpected EOF in stream.\n";
       code = -1;
       delete[] name;
       delete[] last;
       goto cleanup;
     case 0:
-      std::cout << "Ill formatted file.\n";
+      // std::cout << "Ill formatted file.\n";
       code = -1;
       delete[] name;
       delete[] last;
@@ -214,7 +207,7 @@ int Network::readUsers(char *fname) {
     std::string n = std::string(name);
     std::string l = std::string(last);
     User *u = new User(id, n + " " + l, year, zip, links);
-    debug_user(u);
+    // debug_user(u);
     this->addUser(u);
 
     delete[] name;

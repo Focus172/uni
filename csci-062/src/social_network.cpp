@@ -130,11 +130,13 @@ void print_links(std::stringstream &ss, Network &network) {
   int id = network.getId(name + " " + last);
   if (id < 0) {
     std::cout << "no user with name: " << name << " " << last << "\n";
+    return;
   }
   auto user = network.getUser(id);
 
   if (user == nullptr) {
     std::cout << "unreachable";
+    return;
   }
 
   auto friends = user->getFriends();
@@ -142,7 +144,7 @@ void print_links(std::stringstream &ss, Network &network) {
     auto f = network.getUser(freind_id);
 
     if (f == nullptr) {
-      std::cout << "fuick cpp" << std::endl;
+      continue;
     }
 
     std::cout << f->getId() << " " << f->getName() << "\n";
@@ -201,12 +203,16 @@ int main(int argc, char *argv[]) {
       print_links(ss, network);
     } else if (option == "6") {
       write_file(ss, network);
+    } else if (option == "7") {
+      break;
     } else {
-      // std::cout << "unknown option: " << option << std::endl;
+      std::cerr << "unknown option: " << option << std::endl;
       code = EXIT_FAILURE;
       break;
     }
   }
 
+  // this is needed for some reason to properly return the errcode
+  exit(code);
   return code;
 }

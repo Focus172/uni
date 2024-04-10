@@ -1,6 +1,6 @@
 import unittest
-from gradescope_utils.autograder_utils.decorators import weight
-from gradescope_utils.autograder_utils.decorators import visibility
+# from gradescope_utils.autograder_utils.decorators import weight
+# from gradescope_utils.autograder_utils.decorators import visibility
 import subprocess
 import inspect
 import io
@@ -9,7 +9,7 @@ class TestDiff(unittest.TestCase):
     def setUp(self):
         pass
 
-    @weight(2.5)
+    # @weight(2.5)
     def test_commandline_1(self):
         """ commandline 1 and 4: Add User then Print Users """
         test = subprocess.Popen(["./social_network","users.txt"],
@@ -25,8 +25,7 @@ class TestDiff(unittest.TestCase):
         test.terminate()
 
 
-
-    @weight(2.5)
+    # @weight(2.5)
     def test_commandline_2(self):
         """ commandline 2 and 5: Add Connection then Print friends"""
         test = subprocess.Popen(["./social_network","users.txt"],
@@ -42,7 +41,7 @@ class TestDiff(unittest.TestCase):
         test.terminate()
 
 
-    @weight(2.5)
+    # @weight(2.5)
     def test_commandline_3(self):
         """ commandline 3: Remove Connection then print friends """
         test = subprocess.Popen(["./social_network","users.txt"],
@@ -58,7 +57,7 @@ class TestDiff(unittest.TestCase):
         test.terminate()
 
 
-    @weight(2.5)
+    # @weight(2.5)
     def test_commandline_4(self):
         """ commandline 4: List Users (checks if it lists the 148 users) """
         test = subprocess.Popen(["./social_network","users.txt"],
@@ -74,8 +73,7 @@ class TestDiff(unittest.TestCase):
         test.terminate()
 
 
-
-    @weight(2.5)
+    # @weight(2.5)
     def test_commandline_5a(self):
         """ commandline 5a: List Friends """
         test = subprocess.Popen(["./social_network","users.txt"],
@@ -91,7 +89,7 @@ class TestDiff(unittest.TestCase):
         test.terminate()
 
 
-    @weight(2.5)
+    # @weight(2.5)
     def test_commandline_5b(self):
         """ commandline 5b: List Friends (test no crash on unknown user) """
         test = subprocess.Popen(["./social_network","users.txt"],
@@ -102,11 +100,11 @@ class TestDiff(unittest.TestCase):
         out = out.strip().decode('utf-8')
         err = err.strip().decode('utf-8')
         test.kill()
-        self.assertTrue( test.returncode == 0 or test.returncode == 1, msg="return code is not 0 or 1.\nstdout:\n" + out + "\nstderr:\n" + err)
+        self.assertTrue( test.returncode == 0 or test.returncode == 1, msg="return code is not 0 or 1 is " + str(test.returncode) + ".\nstdout:\n" + out + "\nstderr:\n" + err)
         test.terminate()
 
 
-    @weight(2.5)
+    # @weight(2.5)
     def test_commandline_6(self):
         """ commandline 6: Write users """
         test = subprocess.Popen(["./social_network","users.txt"],
@@ -132,7 +130,7 @@ class TestDiff(unittest.TestCase):
         test.terminate()
 
 
-    @weight(2.5)
+    # @weight(2.5)
     def test_commandline_7(self):
         """ commandline 7: Exit """
         test = subprocess.Popen(["./social_network","users.txt"],
@@ -146,3 +144,6 @@ class TestDiff(unittest.TestCase):
         self.assertTrue( test.returncode == 0 or test.returncode == 1, msg="return code is not 0 or 1.\nstdout:\n" + out + "\nstderr:\n" + err)
         test.terminate()
 
+
+if __name__ == '__main__':
+    unittest.main()
