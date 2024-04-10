@@ -9,7 +9,7 @@
 using namespace std;
 
 int main() {
-  char fname[] = "users.txt";
+  char fname[] = "example/users.txt";
   Network network;
   network.readUsers(fname);
   assert(network.numUsers() == 148);

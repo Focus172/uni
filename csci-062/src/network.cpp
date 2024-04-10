@@ -158,6 +158,7 @@ int Network::readUsers(char *fname) {
   default:
     break;
   }
+  this->users_.reserve(nusers + 1);
 
   for (;;) {
     int id;

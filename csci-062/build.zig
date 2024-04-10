@@ -36,6 +36,9 @@ pub fn build(b: *std.Build) void {
         name: []const u8,
     };
 
+    const cli_test = b.addSystemCommand(&.{ "python", "tests.py" });
+    tests.dependOn(&cli_test.step);
+
     const test_derivation = [_]TestDerivation{
         // TestDev{ .src = "tests/test_user_1.cpp", .name = "test-user-1" },
         // TestDev{ .src = "tests/test_user_2.cpp", .name = "test-user-2" },
@@ -49,8 +52,8 @@ pub fn build(b: *std.Build) void {
 
         // just build "./src/tests/test_network_.cpp ./src/user.cpp ./src/network.cpp" "test-network"
         // just build "./src/tests/test_network_add_user.cpp ./src/user.cpp ./src/network.cpp" "test-network-add-user"
-        // just build "./src/tests/test_network_add_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-add"
-        // just build "./src/tests/test_network_add_duplicate_connection.cpp ./src/user.cpp ./src/network.cpp" "test-network-adddup"
+        .{ .src = "tests/test_network_add_connection.cpp", .name = "test-network-add-con" },
+        .{ .src = "tests/test_network_add_duplicate_connection.cpp", .name = "test-network-add-dup" },
         .{ .src = "tests/test_network_add_invalid_connection.cpp", .name = "test-network-add-invalid" },
         .{ .src = "tests/test_network_delete_connection.cpp", .name = "test-network-delete-con" },
         .{ .src = "tests/test_network_delete_invalid_connection.cpp", .name = "test-network-delete-bad" },
