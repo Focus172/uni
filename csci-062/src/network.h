@@ -41,12 +41,25 @@ public:
   int getId(std::string name);
   /// pre: none
   /// post: gets pointer to a user from a given id. returns null if there is no
-  ///       such user. pointer is valid until next call to `addUser` or `readUsers`
+  ///       such user. pointer is valid until next call to `addUser` or
+  ///       `readUsers`
   User *getUser(int id);
 
   /// pre: none
   /// post: gets an inmutable reference to the users of this network
   std::vector<User *> const &getUsers();
+
+  /// TODO: DOCS
+  std::vector<int> shortestPath(int from, int to);
+
+  /// TODO: DOCS
+  std::vector<int> distanceUser(int from, int &to, int distance);
+
+  /// TODO: DOCS
+  std::vector<int> suggestFriends(int who, int &score);
+
+  /// TODO: DOCS
+  std::vector<std::vector<int>> groups();
 };
 
 #endif // !NETWORK_H

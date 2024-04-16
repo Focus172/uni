@@ -9,11 +9,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
-
-// User *get_user_by_name(Network &n, std::string first, std::string last) {
-//   int id = n.getId(first + " " + last);
-//   return n.getUser(id);
-// }
+#include <utility>
 
 void debug_error_non_empty_stream(std::stringstream &ss) {
   // ss.str().substr()
@@ -63,19 +59,7 @@ void add_friend(std::stringstream &ss, Network &network) {
 
   int res = network.addConnection(name1 + " " + last1, name2 + " " + last2);
   if (res < 0) {
-    std::cout << "TODO: imporve this error. user didnt exsits\n";
-
-    // auto u1 = get_user_by_name(network, name1, last1);
-    // if (u1 == nullptr) {
-    //   std::cout << "user (" << name1 << " " << last1 << ") doesn't exists
-    //   \n.";
-    // }
-    // auto u2 = get_user_by_name(network, name2, last2);
-    //
-    // if (u2 == nullptr) {
-    //   std::cout << "user (" << name2 << " " << last2 << ") doesn't exists
-    //   \n.";
-    // }
+    std::cout << "Could not add a connection between those users.\n";
   }
 }
 
@@ -92,19 +76,7 @@ void delete_friend(std::stringstream &ss, Network &network) {
 
   int res = network.deleteConnection(name1 + " " + last1, name2 + " " + last2);
   if (res < 0) {
-    std::cout << "TODO: imporve this error. user didnt exsits\n";
-
-    // auto u1 = get_user_by_name(network, name1, last1);
-    // if (u1 == nullptr) {
-    //   std::cout << "user (" << name1 << " " << last1 << ") doesn't exists
-    //   \n.";
-    // }
-    // auto u2 = get_user_by_name(network, name2, last2);
-    //
-    // if (u2 == nullptr) {
-    //   std::cout << "user (" << name2 << " " << last2 << ") doesn't exists
-    //   \n.";
-    // }
+    std::cout << "Could not find a connection between those users.\n";
   }
 }
 
@@ -135,8 +107,8 @@ void print_links(std::stringstream &ss, Network &network) {
   auto user = network.getUser(id);
 
   if (user == nullptr) {
-    std::cout << "unreachable";
-    return;
+    std::cerr << "unreachable code" << std::endl;
+    abort();
   }
 
   auto friends = user->getFriends();
@@ -161,8 +133,40 @@ void write_file(std::stringstream &ss, Network &network) {
   int ret = network.writeUsers((char *)path.c_str());
 
   if (ret < 0) {
-    std::cout << "could not write to file." << std::endl;
+    std::cout << "Could not write to file." << std::endl;
   }
+}
+
+// 7
+// TODO:
+void print_path(std::stringstream &ss, Network &network) {
+  std::string name1;
+  std::string last1;
+  std::string name2;
+  std::string last2;
+
+  ss >> name1 >> last1 >> name2 >> last2;
+
+  debug_error_non_empty_stream(ss);
+  int id1 = network.getId(name1 + " " + last1);
+  if (id1 < 0) {
+    std::cerr << "unknown user: " << name1 << " " << last1 << ".\n";
+    return;
+  }
+
+  int id2 = network.getId(name2 + " " + last2);
+  if (id2 < 0) {
+    std::cerr << "unknown user: " << name2 << " " << last2 << ".\n";
+    return;
+  }
+
+  auto path = network.shortestPath(id1, id2);
+  if (path.size() == 0) {
+    std::cout << "no path between user\n";
+    return;
+  }
+
+  std::cout << "TODO: print path.\n";
 }
 
 int main(int argc, char *argv[]) {
@@ -204,6 +208,55 @@ int main(int argc, char *argv[]) {
     } else if (option == "6") {
       write_file(ss, network);
     } else if (option == "7") {
+      print_path(ss, network);
+    } else if (option == "8") {
+      // 3. User at a given Distance
+      // Menu 8
+      // Given a user and a distance, find a user whose relational distance from
+      // the given user exactly matches the distance given. You should also give
+      // the path travelled.  To do this, add a public method std::vector<int>
+      // Network::distanceUser(int from, int& to, int distance) to your Network
+      // class.  The call by reference parameterLinks to an external site. "int
+      // & to" should be the id of the user found, and the method should return
+      // a vector of the IDs of the users on the path.  If no such user exists,
+      // the function should return an empty vector and set the "to" parameter
+      // to -1.
+    } else if (option == "9") {
+      // 4. Friend Suggestions
+      // Menu 9
+      // Search only 2 links (or friends of friends).
+      // The score of a potential new friend is the number of common friends
+      // they would share with the specified user. To do this, you will need to
+      // add a public method vector<int> Network::suggestFriends(int who, int&
+      // score) to your Network class. The call by reference parameter score
+      // should hold the highest score found, and the method should return a
+      // list of the ids of Users who have that score. If no suggestions exists,
+      // return the empty vector and set score to 0.
+
+    } else if (option == "10") {
+      // 5. Groups with DFS
+      // Menu 10
+      // Compute how many connected components of users are present in the
+      // network. A connected component is a group of users who all have paths
+      // to one another but have no edges to all other uses. Use DFS to compute
+      // the connected components of the network. The output should be a list of
+      // lists, where each list contains the ids of the users in one connected
+      // component.  To do this you will need to add the following public method
+      // to Network that returns a list of the connected components of the
+      // network:  vector<vector<int> > Network::groups()  You should do all the
+      // computation in the function but do any I/O (printing) in your main. You
+      // may add other private helper functions to your network class.
+      //
+      // For example, if the network only had four users and Isaac Boone and
+      // Jason Chen were each other’s only friends while Asia Kane and Jasmine
+      // Clements were friends, the result of selecting this feature should be:
+      //
+      // Set 1 => Isaac Boone, Jason Chen
+      // Set 2 => Asia Kane, Jasmine Clements
+      // To include this, make this menu option 10. The user shall simply input
+      // the command number (i.e. 8) to execute this feature.
+    } else if (option == "11") {
+      // exit option
       break;
     } else {
       std::cerr << "unknown option: " << option << std::endl;

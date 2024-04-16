@@ -2,13 +2,16 @@
 #include "user.h"
 
 #include <algorithm>
-#include <bits/types/FILE.h>
+#include <assert.h>
+#include <cstddef>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <queue>
 #include <set>
 #include <sstream>
 #include <string>
+#include <utility>
 
 Network::Network() {}
 
@@ -24,19 +27,18 @@ void Network::addUser(User *user) {
 }
 
 int Network::addConnection(std::string s1, std::string s2) {
-  auto pred1 = [s1](User *u) { return u->getName() == s1; };
-  auto it1 = std::find_if(this->users_.begin(), this->users_.end(), pred1);
+  auto it1 = std::find_if(this->users_.begin(), this->users_.end(),
+                          [&](User *u) { return u->getName() == s1; });
 
   if (it1 == this->users_.end())
     return -1;
+  User *u1 = *it1;
 
-  auto pred2 = [s2](User *u) { return u->getName() == s2; };
-  auto it2 = std::find_if(this->users_.begin(), this->users_.end(), pred2);
+  auto it2 = std::find_if(this->users_.begin(), this->users_.end(),
+                          [&](User *u) { return u->getName() == s2; });
 
   if (it2 == this->users_.end())
     return -1;
-
-  User *u1 = *it1;
   User *u2 = *it2;
 
   u1->addFriend(u2->getId());
@@ -183,7 +185,8 @@ int Network::readUsers(char *fname) {
       code = -1;
       delete[] name;
       delete[] last;
-      goto cleanup;
+      fclose(f);
+      return code;
     case 0:
       // std::cout << "Ill formatted file.\n";
       code = -1;
@@ -261,3 +264,70 @@ User *Network::getUser(int id) {
 }
 
 std::vector<User *> const &Network::getUsers() { return this->users_; }
+
+/// TODO: impl
+std::vector<int> Network::shortestPath(int from, int to) {
+  // std::vector<best_node> foundq;
+  std::set<int> seen;
+  std::queue<std::pair<int, std::vector<int>>> searchq;
+
+  std::vector<int> best_path;
+
+  searchq.push({from, {}});
+  while (searchq.size() > 0) {
+    auto p = searchq.back();
+    searchq.pop();
+
+    int id = p.first;
+    std::vector<int> path = p.second;
+
+    User *u = this->getUser(id);
+    assert(u != nullptr);
+    auto nodes = u->getFriends();
+
+    for (auto node : nodes) {
+      if (node == to) {
+        path.push_back(node);
+        best_path = path;
+        goto cleanup;
+      }
+      bool was = seen.insert(node).second;
+      if (was) {
+        // searchq.push({node, {}});
+      }
+    }
+  }
+
+cleanup:
+  return best_path;
+}
+
+struct node {
+  /// this nodes id
+  int id;
+  /// node that this came from
+  int pr;
+  /// number of step it took to get here
+  int dp;
+};
+
+/// TODO: impl
+std::vector<int> Network::distanceUser(int from, int &to, int distance) {
+  std::vector<node> seen = {node{from, -1, 0}};
+  int i = 0;
+  while (i < seen.size()) {
+    node &node = seen[i];
+    User *u = this->getUser(node.id);
+    auto fr = u->getFriends();
+
+    i += 1;
+  }
+
+  return {};
+}
+
+/// TODO: impl
+std::vector<int> Network::suggestFriends(int who, int &score) { return {}; }
+
+/// TODO: impl
+std::vector<std::vector<int>> Network::groups() { return {}; }

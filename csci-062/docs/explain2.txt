@@ -1,0 +1,12 @@
+6. Short Answer Questions
+Answer these questions in a .txt file. Write at most two sentences for each question.
+
+In step 1, which linux commands did you use to (1) create a new folder and (2) copy your files into a new folder?
+Could any of the breadth-first-search questions (shortestPath and distanceUser) be solved with depth-first-search? Why or why not?
+Could the depth-first-search question (groups) be solved with breadth-first-search? Why or why not?
+Can the suggestFriends problem be solved without breadth-first-search and depth-first-search?
+Using big-O notation, what is the runtime of your shortestPath implementation in terms of n (the number of vertices) and/or m (the number of edges)? 
+Using big-O notation, what is the runtime of your groups implementation in terms of n (the number of vertices) and/or m (the number of edges)?
+In hours, (approximately) how much time did you spend on this assignment? (there are no wrong answers)
+Deliverables:
+Please upload the files for your classes, your main file, your makefile, and your .txt with your short answer questions.
