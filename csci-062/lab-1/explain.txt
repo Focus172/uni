@@ -1,0 +1,37 @@
+## Part 1
+1. The code is compiled.
+2. The code is recompiled because a dependencies changed.
+3. None of the dependencies have a time-stamp newer than the binary (as there
+   are no dependencies) so the command is not re-ran.
+4. The code is recompiled because a dependencies changed.
+5. Dependencies allow to watch for changes in code.
+
+## Part 2
+1. g++
+2. `%.o` use the -c flag and `output` doesn't.
+3. class1.o, class2.o, main.o
+4. class1.o and output
+5. all the objects where removed
+6. it compiles the main object with no argumnets but `make output` still works
+
+## Part 3
+1. g++
+2. No
+3. Yes
+4. $@: output name, $^: all the dependencies, $<: the first dependencies
+
+## Part 4
+1. The same as step 2 and 3.
+2. Those where the files matched that matched the pattern in the current
+   directory.
+
+## Part 5
+1. Same as before but now the flags are added to the compilation.
+2. This forces a specific version of the c++ standard. This restricts certain
+   features in the standard library.
+3. It allows changing your c compiler and flags in one place and have the
+   changes be used everywhere.
+
+<!-- 
+vim: ft=markdown textwidth=80
+-->

@@ -13,6 +13,40 @@
 #include <string>
 #include <utility>
 
+void debug_user(User *u) {
+  std::cout << "User { \n";
+  std::cout << "\tname: " << u->getName() << "\n";
+  std::cout << "\tid: " << u->getId() << "\n";
+  std::cout << "\tzip: " << u->getZip() << "\n";
+  std::cout << "\tyear: " << u->getYear() << "\n";
+  std::cout << "\tlinks: ";
+  for (auto link : u->getFriends()) {
+    std::cout << link << " ";
+  }
+  std::cout << "\n";
+  std::cout << "}" << std::endl;
+}
+
+struct node {
+  /// this nodes id
+  int id;
+  /// node that this came from
+  int pr;
+  /// number of step it took to get here
+  int dp;
+};
+
+void debug_node(node *n, char const *name) {
+  printf("%s {\n"
+         "  id: %d\n"
+         "  pr: %d\n"
+         // "  dp: %d\n"
+         "} node *;\n",
+         name, n->id, n->pr
+         // n->dp
+  );
+}
+
 Network::Network() {}
 
 Network::~Network() {
@@ -79,20 +113,6 @@ int Network::getId(std::string name) {
   User *u = *it;
   return u->getId();
 }
-
-// void debug_user(User *u) {
-//   std::cout << "User { \n";
-//   std::cout << "\tname: " << u->getName() << "\n";
-//   std::cout << "\tid: " << u->getId() << "\n";
-//   std::cout << "\tzip: " << u->getZip() << "\n";
-//   std::cout << "\tyear: " << u->getYear() << "\n";
-//   std::cout << "\tlinks: ";
-//   for (auto link : u->getFriends()) {
-//     std::cout << link << " ";
-//   }
-//   std::cout << "\n";
-//   std::cout << "}" << std::endl;
-// }
 
 #define ASCII_ZERO 48
 
@@ -185,7 +205,6 @@ int Network::readUsers(char *fname) {
       code = -1;
       delete[] name;
       delete[] last;
-      fclose(f);
       return code;
     case 0:
       // std::cout << "Ill formatted file.\n";
@@ -265,69 +284,225 @@ User *Network::getUser(int id) {
 
 std::vector<User *> const &Network::getUsers() { return this->users_; }
 
-/// TODO: impl
+/// TODO: better tests
 std::vector<int> Network::shortestPath(int from, int to) {
-  // std::vector<best_node> foundq;
-  std::set<int> seen;
-  std::queue<std::pair<int, std::vector<int>>> searchq;
-
-  std::vector<int> best_path;
-
-  searchq.push({from, {}});
-  while (searchq.size() > 0) {
-    auto p = searchq.back();
-    searchq.pop();
-
-    int id = p.first;
-    std::vector<int> path = p.second;
-
-    User *u = this->getUser(id);
-    assert(u != nullptr);
-    auto nodes = u->getFriends();
-
-    for (auto node : nodes) {
-      if (node == to) {
-        path.push_back(node);
-        best_path = path;
-        goto cleanup;
-      }
-      bool was = seen.insert(node).second;
-      if (was) {
-        // searchq.push({node, {}});
-      }
-    }
+  if (to == from) {
+    return {to};
   }
 
-cleanup:
-  return best_path;
-}
+  std::vector<node> seen = std::vector<node>{node{from, -1}};
 
-struct node {
-  /// this nodes id
-  int id;
-  /// node that this came from
-  int pr;
-  /// number of step it took to get here
-  int dp;
-};
-
-/// TODO: impl
-std::vector<int> Network::distanceUser(int from, int &to, int distance) {
-  std::vector<node> seen = {node{from, -1, 0}};
   int i = 0;
-  while (i < seen.size()) {
+
+  bool found = false;
+
+  while (!found && i < seen.size()) {
     node &node = seen[i];
+    int p_id = node.id;
+
     User *u = this->getUser(node.id);
-    auto fr = u->getFriends();
+    auto friends = u->getFriends();
+    for (auto id : friends) {
+      if (id == to) {
+        struct node n = {id, p_id};
+        seen.push_back(n);
+        found = true;
+        break;
+      }
+      if (id == u->getId()) {
+        continue;
+      }
+
+      // check if the thing exists
+      auto it = std::find_if(seen.begin(), seen.end(),
+                             [id](struct node &n) { return n.id == id; });
+
+      if (it == seen.end()) {
+        struct node n = {.id = id, .pr = p_id};
+        seen.push_back(n);
+      }
+    }
 
     i += 1;
   }
 
-  return {};
+  if (found) {
+    std::vector<int> ret = {};
+
+    for (int nid = seen.back().id; nid != -1;) {
+      auto it = std::find_if(seen.begin(), seen.end(),
+                             [nid](struct node &n) { return n.id == nid; });
+
+      node *n = &*it;
+      // debug_node(n, "n");
+      ret.push_back(n->id);
+      nid = n->pr;
+    }
+
+    std::reverse(ret.begin(), ret.end());
+
+    // printf("nodes := ");
+    // int i = 0;
+    // for (auto rn : ret) {
+    //   if (i == 0) {
+    //     i = 1;
+    //   } else {
+    //     printf(" -> ");
+    //   }
+    //   printf("%d", rn);
+    // }
+    // printf("\n");
+
+    return ret;
+  } else {
+    return {};
+  }
 }
 
 /// TODO: impl
-std::vector<int> Network::suggestFriends(int who, int &score) { return {}; }
+std::vector<int> Network::distanceUser(int from, int &to, int distance) {
+  std::vector<node> seen = std::vector<node>{node{from, -1, 0}};
+
+  int i = 0;
+  bool found = false;
+
+  while (!found && i < seen.size()) {
+    int p_id = seen[i].id;
+    int dp = seen[i].dp;
+    if (dp >= distance) {
+      found = true;
+      break;
+    }
+
+    User *u = this->getUser(p_id);
+    auto friends = u->getFriends();
+    for (auto id : friends) {
+      // check if the thing exists
+      auto it = std::find_if(seen.begin(), seen.end(),
+                             [id](struct node &n) { return n.id == id; });
+
+      if (it == seen.end()) {
+        struct node n = {.id = id, .pr = p_id, .dp = dp + 1};
+        seen.push_back(n);
+      }
+    }
+
+    i += 1;
+  }
+
+  if (found) {
+    node &last = seen[i];
+
+    to = last.id;
+
+    std::vector<int> ret = {};
+
+    for (int nid = seen.back().id; nid != -1;) {
+      auto it = std::find_if(seen.begin(), seen.end(),
+                             [nid](struct node &n) { return n.id == nid; });
+
+      node *n = &*it;
+      // debug_node(n, "n");
+      ret.push_back(n->id);
+      nid = n->pr;
+    }
+
+    std::reverse(ret.begin(), ret.end());
+
+    return ret;
+  } else {
+    to = -1;
+    return {};
+  }
+}
 
 /// TODO: impl
-std::vector<std::vector<int>> Network::groups() { return {}; }
+std::vector<int> Network::suggestFriends(int who, int &score) {
+  User *u = this->getUser(who);
+  if (!u) {
+    score = -1;
+    return {};
+  }
+
+  auto friends = u->getFriends();
+
+  std::vector<int> ret = {};
+
+  auto users = this->getUsers();
+  for (User *user : users) {
+    if (user->getId() == who || friends.find(user->getId()) != friends.end()) {
+      continue;
+    }
+
+    auto fr = user->getFriends();
+    int c = std::count_if(fr.begin(), fr.end(), [&](int id) {
+      return friends.find(id) != friends.end();
+    });
+
+    if (c >= score) {
+      if (c > score) {
+        score = c;
+        ret.clear();
+      }
+      ret.push_back(user->getId());
+    }
+  }
+
+  return ret;
+}
+
+/// TODO: more test
+std::vector<std::vector<int>> Network::groups() {
+  // a list of people who have already been checked
+  std::set<int> social = {};
+  std::vector<std::vector<int>> groups = {};
+
+  auto us = this->getUsers();
+  for (User *u : us) {
+    int this_id = u->getId();
+
+    if (social.find(this_id) != social.end()) {
+      continue;
+    }
+
+    auto fr = u->getFriends();
+    bool is_group = std::all_of(fr.begin(), fr.end(), [&](int friend_id) {
+      User *f = this->getUser(friend_id);
+      if (!f) {
+        return false;
+      }
+
+      // check that all of the friends of friends are also friends of this user
+      auto fof = f->getFriends();
+      return std::all_of(fof.begin(), fof.end(), [&](int id) {
+        return std::find(fr.begin(), fr.end(), id) != fr.end() || id == this_id;
+      });
+    });
+
+    // if it is a group add it to the list
+    if (is_group) {
+      std::vector<int> v(fr.begin(), fr.end());
+      groups.push_back(v);
+      groups.back().push_back(this_id);
+    }
+
+    // either way, add them all to the seen
+    for (auto dfghj : fr) {
+      social.insert(dfghj);
+    }
+    social.insert(this_id);
+  }
+
+  // printf("=== groups\n");
+  // int i = 1;
+  // for (auto g : groups) {
+  //   printf("group %d: ", i);
+  //   for (int id : g) {
+  //     printf("%d ", id);
+  //   }
+  //   printf("\n");
+  //   i += 1;
+  // }
+
+  return groups;
+}

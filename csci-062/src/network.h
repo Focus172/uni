@@ -49,16 +49,24 @@ public:
   /// post: gets an inmutable reference to the users of this network
   std::vector<User *> const &getUsers();
 
-  /// TODO: DOCS
+  /// pre: from and to are valid node id
+  /// post: gets the sortest path from one node to another.
   std::vector<int> shortestPath(int from, int to);
 
-  /// TODO: DOCS
+  /// pre: from is a valid id and distance is greater than 0
+  /// post: finds a user a given number of links links away from the from user.
+  ///       writes the id to &to and returns the path in the vector. returns -1
+  ///       in disance and and empty list if there is no link.
   std::vector<int> distanceUser(int from, int &to, int distance);
 
-  /// TODO: DOCS
+  /// pre: who is a valid user
+  /// post: find users who has the most friends in common with the given user
+  ///       returns the number of mutuals in score and the ids in the return
+  ///       value.
   std::vector<int> suggestFriends(int who, int &score);
 
-  /// TODO: DOCS
+  /// pre: none
+  /// post: return lists of users who are only friends with each other.
   std::vector<std::vector<int>> groups();
 };
 

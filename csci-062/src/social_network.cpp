@@ -166,7 +166,118 @@ void print_path(std::stringstream &ss, Network &network) {
     return;
   }
 
-  std::cout << "TODO: print path.\n";
+  std::cout << "Distance: " << path.size() << "\n";
+  bool f = true;
+  for (int id : path) {
+    User *u = network.getUser(id);
+    if (!f) {
+      std::cout << " -> ";
+    } else {
+      f = false;
+    }
+    std::cout << u->getName();
+  }
+  std::cout << std::endl;
+}
+
+// 8
+void print_distance_user(std::stringstream &ss, Network &network) {
+  std::string name;
+  std::string last;
+  int dist;
+  ss >> name;
+  ss >> last;
+  ss >> dist;
+
+  debug_error_non_empty_stream(ss);
+
+  int from = network.getId(name + " " + last);
+  if (from < 0) {
+    std::cerr << "unknown user: " << name << " " << last << ".\n";
+    return;
+  }
+
+  int to;
+  auto path = network.distanceUser(from, to, dist);
+
+  std::cout << name << " " << last << " : ";
+  bool f = true;
+  for (int id : path) {
+    User *u = network.getUser(id);
+    if (!f) {
+      std::cout << " -> ";
+    } else {
+      f = false;
+    }
+    std::cout << u->getName();
+  }
+  std::cout << std::endl;
+}
+
+// 9
+void print_suggestions(std::stringstream &ss, Network &network) {
+  std::string name;
+  std::string last;
+  ss >> name;
+  ss >> last;
+
+  debug_error_non_empty_stream(ss);
+  int who = network.getId(name + " " + last);
+
+  if (who < 0) {
+    std::cerr << "unknown user: " << name << " " << last << ".\n";
+    return;
+  }
+
+  int score = 0;
+  auto suggest = network.suggestFriends(who, score);
+
+  if (score < 0) {
+    std::cout << "Can't find any suggestions for you.";
+  } else {
+    std::cout << "The suggested friend(s) is/are:";
+
+    for (auto s : suggest) {
+      std::cout << "\n";
+      auto u = network.getUser(s);
+      if (!u)
+        return;
+      std::cout << u->getName() << " Score: " << score;
+    }
+  }
+
+  std::cout << std::endl;
+}
+
+// 10
+void print_groups(std::stringstream &ss, Network &network) {
+  debug_error_non_empty_stream(ss);
+  auto groups = network.groups();
+
+  int i = 1;
+  for (auto group : groups) {
+    if (i != 1) {
+      std::cout << "\n";
+    }
+
+    std::cout << "Set " << i << " => ";
+
+    bool f = true;
+    for (auto id : group) {
+      User *u = network.getUser(id);
+      if (!u)
+        return;
+
+      if (f) {
+        f = false;
+      } else {
+        std::cout << ", ";
+      }
+      std::cout << u->getName();
+    }
+    i += 1;
+  }
+  std::cout << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -210,51 +321,11 @@ int main(int argc, char *argv[]) {
     } else if (option == "7") {
       print_path(ss, network);
     } else if (option == "8") {
-      // 3. User at a given Distance
-      // Menu 8
-      // Given a user and a distance, find a user whose relational distance from
-      // the given user exactly matches the distance given. You should also give
-      // the path travelled.  To do this, add a public method std::vector<int>
-      // Network::distanceUser(int from, int& to, int distance) to your Network
-      // class.  The call by reference parameterLinks to an external site. "int
-      // & to" should be the id of the user found, and the method should return
-      // a vector of the IDs of the users on the path.  If no such user exists,
-      // the function should return an empty vector and set the "to" parameter
-      // to -1.
+      print_distance_user(ss, network);
     } else if (option == "9") {
-      // 4. Friend Suggestions
-      // Menu 9
-      // Search only 2 links (or friends of friends).
-      // The score of a potential new friend is the number of common friends
-      // they would share with the specified user. To do this, you will need to
-      // add a public method vector<int> Network::suggestFriends(int who, int&
-      // score) to your Network class. The call by reference parameter score
-      // should hold the highest score found, and the method should return a
-      // list of the ids of Users who have that score. If no suggestions exists,
-      // return the empty vector and set score to 0.
-
+      print_suggestions(ss, network);
     } else if (option == "10") {
-      // 5. Groups with DFS
-      // Menu 10
-      // Compute how many connected components of users are present in the
-      // network. A connected component is a group of users who all have paths
-      // to one another but have no edges to all other uses. Use DFS to compute
-      // the connected components of the network. The output should be a list of
-      // lists, where each list contains the ids of the users in one connected
-      // component.  To do this you will need to add the following public method
-      // to Network that returns a list of the connected components of the
-      // network:  vector<vector<int> > Network::groups()  You should do all the
-      // computation in the function but do any I/O (printing) in your main. You
-      // may add other private helper functions to your network class.
-      //
-      // For example, if the network only had four users and Isaac Boone and
-      // Jason Chen were each other’s only friends while Asia Kane and Jasmine
-      // Clements were friends, the result of selecting this feature should be:
-      //
-      // Set 1 => Isaac Boone, Jason Chen
-      // Set 2 => Asia Kane, Jasmine Clements
-      // To include this, make this menu option 10. The user shall simply input
-      // the command number (i.e. 8) to execute this feature.
+      print_groups(ss, network);
     } else if (option == "11") {
       // exit option
       break;

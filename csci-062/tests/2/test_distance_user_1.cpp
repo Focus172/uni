@@ -14,7 +14,7 @@ int main() {
 
   int to;
   vector<int> path = net.distanceUser(2,to,2);
-  cout << path.size() << endl;
+  // cout << path.size() << endl;
   assert(path.size() == 3);
 	return 0;
 }
