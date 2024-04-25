@@ -280,10 +280,41 @@ void print_groups(std::stringstream &ss, Network &network) {
   std::cout << std::endl;
 }
 
+void print_recent_posts(std::stringstream &ss, Network &network) {
+  std::string name;
+  std::string last;
+  ss >> name;
+  ss >> last;
+
+  int count;
+  ss >> count;
+
+  debug_error_non_empty_stream(ss);
+
+  int id = network.getId(name + " " + last);
+  if (id < 0) {
+    fprintf(stderr, "unknown user: %s %s\n", name.c_str(), last.c_str());
+    return;
+  }
+
+  std::cout << network.getPostsString(id, count, false) << "\n";
+}
+
 int main(int argc, char *argv[]) {
   Network network;
   if (argc > 1) {
-    network.readUsers(argv[1]);
+    int ret = network.readUsers(argv[1]);
+    if (ret < 0) {
+      fprintf(stderr, "Could not read from file: %s\n", argv[2]);
+      return -1;
+    }
+  }
+  if (argc > 2) {
+    int ret = network.readPosts(argv[2]);
+    if (ret < 0) {
+      fprintf(stderr, "Could not read from file: %s\n", argv[2]);
+      return -1;
+    }
   }
 
   srand(time(nullptr));
@@ -327,6 +358,8 @@ int main(int argc, char *argv[]) {
     } else if (option == "10") {
       print_groups(ss, network);
     } else if (option == "11") {
+      print_recent_posts(ss, network);
+    } else if (option == "12") {
       // exit option
       break;
     } else {
@@ -334,6 +367,8 @@ int main(int argc, char *argv[]) {
       code = EXIT_FAILURE;
       break;
     }
+
+    // debug_error_non_empty_stream(ss);
   }
 
   // this is needed for some reason to properly return the errcode

@@ -1,10 +1,12 @@
 #include "network.h"
+#include "post.h"
 #include "user.h"
 
 #include <algorithm>
 #include <assert.h>
 #include <cstddef>
 #include <cstdio>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <queue>
@@ -505,4 +507,146 @@ std::vector<std::vector<int>> Network::groups() {
   // }
 
   return groups;
+}
+
+void Network::addPost(int ownerId, std::string message, int likes,
+                      bool isIncoming, std::string authorName, bool isPublic) {
+  User *u = this->getUser(ownerId);
+
+  if (u == nullptr)
+    return;
+
+  int id = u->getPosts().size() + 1;
+  Post *p = new Post(id, ownerId, message, likes);
+  u->addPost(p);
+}
+
+std::string Network::getPostsString(int ownerId, int howMany,
+                                    bool showOnlyPublic) {
+
+  User *u = this->getUser(ownerId);
+
+  if (u == nullptr)
+    return "";
+
+  return u->getPostsString(howMany, showOnlyPublic);
+}
+
+#define handle_fscanf_err(ret)                                                 \
+  switch (ret) {                                                               \
+  case EOF:                                                                    \
+    fprintf(stderr, "Unexpected EOF in stream.\n");                            \
+    goto cleanup;                                                              \
+  case 0:                                                                      \
+    fprintf(stderr, "[%s:%d]: Ill formatted file.\n", __FILE__, __LINE__);     \
+    goto cleanup;                                                              \
+  }
+
+#define scan_error(f)                                                          \
+  if (!f) {                                                                    \
+    fprintf(stderr, "[%s:%d]: Ill formatted file.\n", __FILE__, __LINE__);     \
+    goto cleanup;                                                              \
+  }
+
+int Network::readPosts(char *fname) {
+  std::ifstream f(fname);
+  if (!f.is_open()) {
+    printf("could not open file %s \n", fname);
+    return -1;
+  }
+
+  // 1: single number representing how many posts are in the file
+  int nusers;
+  f >> nusers;
+  scan_error(f);
+
+  for (;;) {
+    // 2: messageId_0
+    int id;
+    f >> id;
+    if (f.eof()) {
+      break;
+    }
+    scan_error(f);
+    fprintf(stderr, "got id: %d\n", id);
+
+    f.ignore(2);
+    // 3: <TAB>message text
+    std::string msg;
+    std::getline(f, msg);
+    scan_error(f);
+
+    fprintf(stderr, "got msg: %s\n", msg.c_str());
+
+    // 4: <TAB>ownerId
+    int owner;
+
+    // 5: <TAB>likes
+    int likes;
+
+    f >> owner >> likes;
+    scan_error(f);
+
+    fprintf(stderr, "got owner: %d\n", owner);
+    fprintf(stderr, "got likes: %d\n", likes);
+
+    f.ignore(1);
+
+    // 6: <TAB>an empty line if the message is an owner Post OR the string
+    // "public" or "private" if the message is an IncomingPost
+    std::string type;
+    std::getline(f, type);
+    scan_error(f);
+
+    fprintf(stderr, "got type: %s\n", type.c_str());
+
+    // 7: <TAB>an empty line if the message is an owner Post OR an author
+    // if the message is an IncomingPost
+    std::string author;
+    std::getline(f, author);
+    scan_error(f);
+
+    fprintf(stderr, "got author: %s\n", author.c_str());
+
+    User *u = this->getUser(owner);
+    if (u == nullptr) {
+      continue;
+    }
+
+    if (type.size() == 0) {
+      Post *p = new Post(id, owner, msg, likes);
+      u->addPost(p);
+    } else {
+
+      bool publ;
+      if (type == "\tprivate") {
+        publ = false;
+      } else if (type == "\tpublic") {
+        publ = true;
+      } else {
+        fprintf(stderr, "unknown message publicity: %s\n", type.c_str());
+        goto cleanup;
+      }
+
+      Post *p = new IncomingPost(id, owner, msg, likes, publ, author);
+      u->addPost(p);
+    }
+  }
+
+  f.close();
+  return 0;
+
+cleanup:
+  f.close();
+  return -1;
+}
+
+int Network::writePosts(char *fname) {
+  // To implement writePosts, you should load all of the posts from all the
+  // users into a single vector of Post pointers, sort the Posts by their
+  // messageId using the STL sort methodLinks to an external site., and then
+  // write the posts in that order to a file. To call sort function, you should
+  // implement a comparison function for comparing two Post pointers.
+  fprintf(stderr, "TODO: %s, %s:%d", __FUNCTION__, __FILE__, __LINE__);
+  return -1;
 }

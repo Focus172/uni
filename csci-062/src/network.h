@@ -68,6 +68,18 @@ public:
   /// pre: none
   /// post: return lists of users who are only friends with each other.
   std::vector<std::vector<int>> groups();
+
+  /// pre: ownerId is a valid user id
+  /// post: the user has a post added to them
+  void addPost(int ownerId, std::string message, int likes, bool isIncoming,
+               std::string authorName, bool isPublic);
+
+  /// pre: ownerId is a valid user id
+  /// post: the posts string are returned
+  std::string getPostsString(int ownerId, int howMany, bool showOnlyPublic);
+
+  int readPosts(char *fname);
+  int writePosts(char *fname);
 };
 
 #endif // !NETWORK_H

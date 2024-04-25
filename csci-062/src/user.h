@@ -1,8 +1,10 @@
 #ifndef USER_H
 #define USER_H
 
+#include "post.h"
 #include <set>
 #include <string>
+#include <vector>
 
 class User {
 private:
@@ -11,6 +13,7 @@ private:
   int year_;
   int zip_;
   std::set<int> friends_;
+  std::vector<Post *> messages_;
 
 public:
   /// pre: none
@@ -19,6 +22,8 @@ public:
   /// pre: id is unique and friends only contains other valid id
   /// post: a user is constructed
   User(int id, std::string name, int year, int zip, std::set<int> friends);
+
+  ~User();
 
   /// pre: id represents a valid user
   /// post: the friend is added
@@ -42,6 +47,12 @@ public:
   /// pre: none
   /// post: returns this users friends
   std::set<int> &getFriends();
+
+  void addPost(Post *);
+
+  std::vector<Post *> getPosts();
+
+  std::string getPostsString(int howMany, bool showOnlyPublic);
 };
 
 #endif // USER_H
