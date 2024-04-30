@@ -641,12 +641,46 @@ cleanup:
   return -1;
 }
 
+// To implement writePosts, you should load all of the posts from all the
+// users into a single vector of Post pointers, sort the Posts by their
+// messageId using the STL sort methodLinks to an external site., and then
+// write the posts in that order to a file. To call sort function, you
+// should implement a comparison function for comparing two Post pointers.
 int Network::writePosts(char *fname) {
-  // To implement writePosts, you should load all of the posts from all the
-  // users into a single vector of Post pointers, sort the Posts by their
-  // messageId using the STL sort methodLinks to an external site., and then
-  // write the posts in that order to a file. To call sort function, you should
-  // implement a comparison function for comparing two Post pointers.
-  fprintf(stderr, "TODO: %s, %s:%d", __FUNCTION__, __FILE__, __LINE__);
+  std::ofstream f(fname);
+
+  std::vector<Post *> posts;
+  for (auto u : this->users_) {
+    auto s = u->getPosts();
+    for (auto p : s) {
+      posts.push_back(p);
+    }
+  }
+  // 1: single number representing how many posts are in the file
+  f << posts.size() << "\n";
+
+  std::sort(posts.begin(), posts.end(), [](Post *&lhs, Post *&rhs) {
+    return lhs->getMessageId() < rhs->getMessageId();
+  });
+
+  for (Post *p : posts) {
+    // 2: messageId_0
+    f << p->getMessageId() << "\n";
+    // 3: <TAB>message text
+    f << "\t" << p->getMessage() << "\n";
+    // 4: <TAB>ownerId
+    f << "\t" << p->getOwnerId() << "\n";
+    // 5: <TAB>likes
+    f << "\t" << p->getLikes() << "\n";
+    // 6: <TAB>an empty line if the message is an owner Post OR the string
+    // "public" or "private" if the message is an IncomingPost
+    // fprintf(stderr, "TODO: %s, %s:%d", __FUNCTION__, __FILE__, __LINE__);
+    f << "\t" << "\n";
+    // 7: <TAB>an empty line if the message is an owner Post OR an author
+    // if the message is an IncomingPost
+    // fprintf(stderr, "TODO: %s, %s:%d", __FUNCTION__, __FILE__, __LINE__);
+    f << "\t" << "\n";
+  }
+
   return -1;
 }

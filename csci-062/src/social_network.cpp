@@ -12,7 +12,6 @@
 #include <utility>
 
 void debug_error_non_empty_stream(std::stringstream &ss) {
-  // ss.str().substr()
   if (ss.eof())
     return;
 
