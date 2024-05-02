@@ -548,7 +548,7 @@ std::string Network::getPostsString(int ownerId, int howMany,
     goto cleanup;                                                              \
   }
 
-int Network::readPosts(char *fname) {
+int Network::readPosts(const char *fname) {
   std::ifstream f(fname);
   if (!f.is_open()) {
     printf("could not open file %s \n", fname);
@@ -568,7 +568,7 @@ int Network::readPosts(char *fname) {
       break;
     }
     scan_error(f);
-    fprintf(stderr, "got id: %d\n", id);
+    // fprintf(stderr, "got id: %d\n", id);
 
     f.ignore(2);
     // 3: <TAB>message text
@@ -576,7 +576,7 @@ int Network::readPosts(char *fname) {
     std::getline(f, msg);
     scan_error(f);
 
-    fprintf(stderr, "got msg: %s\n", msg.c_str());
+    // fprintf(stderr, "got msg: %s\n", msg.c_str());
 
     // 4: <TAB>ownerId
     int owner;
@@ -587,8 +587,8 @@ int Network::readPosts(char *fname) {
     f >> owner >> likes;
     scan_error(f);
 
-    fprintf(stderr, "got owner: %d\n", owner);
-    fprintf(stderr, "got likes: %d\n", likes);
+    // fprintf(stderr, "got owner: %d\n", owner);
+    // fprintf(stderr, "got likes: %d\n", likes);
 
     f.ignore(1);
 
@@ -598,7 +598,7 @@ int Network::readPosts(char *fname) {
     std::getline(f, type);
     scan_error(f);
 
-    fprintf(stderr, "got type: %s\n", type.c_str());
+    // fprintf(stderr, "got type: %s\n", type.c_str());
 
     // 7: <TAB>an empty line if the message is an owner Post OR an author
     // if the message is an IncomingPost
@@ -606,7 +606,7 @@ int Network::readPosts(char *fname) {
     std::getline(f, author);
     scan_error(f);
 
-    fprintf(stderr, "got author: %s\n", author.c_str());
+    // fprintf(stderr, "got author: %s\n", author.c_str());
 
     User *u = this->getUser(owner);
     if (u == nullptr) {

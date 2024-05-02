@@ -3,12 +3,17 @@
 ## Project 1
 Contains code to "model" a social network with connections between users.
 
-### Running
+### Cli
 ```bash
+# zig build test
 zig build run
 ```
 
-### Testing
+### Ui
+requires qt >= 6
 ```bash
-zig build test
+mkdir build
+cd build
+qmake ..
+make
 ```

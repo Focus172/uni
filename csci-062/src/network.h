@@ -78,7 +78,7 @@ public:
   /// post: the posts string are returned
   std::string getPostsString(int ownerId, int howMany, bool showOnlyPublic);
 
-  int readPosts(char *fname);
+  int readPosts(const char *fname);
   int writePosts(char *fname);
 };
 
