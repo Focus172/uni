@@ -26,7 +26,7 @@ public:
   /// pre: fname is a non-null string
   /// post: the network reads in users from the file. returns -1 if file
   ///       doesnt exists or is ill formatted
-  int readUsers(char *fname);
+  int readUsers(const char *fname);
   /// pre: fname is a non-null string
   /// post: attempts to write users to the given file name creating it if needed
   ///       returns -1 if file could not be opened

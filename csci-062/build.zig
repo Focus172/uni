@@ -129,4 +129,12 @@ pub fn build(b: *std.Build) void {
         const unit_test = b.addRunArtifact(tester);
         tests.dependOn(&unit_test.step);
     }
+
+    // const win = b.addExecutable(.{
+    //     .name = "social-network-window",
+    //     .target = target,
+    //     .optimize = optimize,
+    // });
+    // win.addCSourceFiles(&.{ "src/social_network.cpp", "src/user.cpp", "src/network.cpp", "src/post.cpp" }, &c_options);
+    // win.linkLibCpp();
 }

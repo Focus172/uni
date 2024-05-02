@@ -159,7 +159,7 @@ int read_links(FILE *f, std::set<int> &set) {
   return 1;
 }
 
-int Network::readUsers(char *fname) {
+int Network::readUsers(const char *fname) {
   int code = EXIT_SUCCESS;
 
   FILE *f = fopen(fname, "r");

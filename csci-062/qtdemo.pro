@@ -9,16 +9,20 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    counter.cpp \
-    main.cpp \
-    clickgamewindow.cpp
+    src/main.cpp \
+    src/network.cpp \
+    src/post.cpp \
+    src/user.cpp \
+    src/socialnetworkwindow.cpp
 
 HEADERS += \
-    clickgamewindow.h \
-    counter.h
+    src/network.h \
+    src/post.h \
+    src/user.h \
+    src/socialnetworkwindow.h
 
 FORMS += \
-    clickgamewindow.ui
+    src/socialnetworkwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
