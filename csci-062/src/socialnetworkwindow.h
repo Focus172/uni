@@ -11,16 +11,15 @@ public:
     SelectedUser() : id(-1), model(new QStringListModel) {}
     ~SelectedUser() { delete model; }
 
-    void select(User *user, bool showprivate) {
+    void select(User *user, int uid) {
         // assert(u != nullptr);
         auto strs = QStringList();
 
         for (auto post : user->getPosts() ) {
-            // if the post is not public and this is not use then skip
-            if (!post->getIsPublic() && !showprivate) {
-                continue;
+            // if the current user is the displayed user OR the post is public
+            if (uid == user->getId() || post->getIsPublic()) {
+                strs.append(QString::fromStdString(post->toString()));
             }
-            strs.append(QString::fromStdString(post->toString()));
         }
 
         this->id = user->getId();
@@ -49,7 +48,10 @@ public:
 
     void showprofile(int user);
     void gohome();
+    void addfriend();
+
     void gofriend(int row, int col);
+    void addsuggestedfriend(int row, int col);
 
 private:
     Ui::SocialNetworkWindow *ui;

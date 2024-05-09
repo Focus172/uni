@@ -1,15 +1,18 @@
 #include "socialnetworkwindow.h"
 #include "ui_socialnetworkwindow.h"
 
+#define null_check(p) if (p == nullptr) throw;
+// #define null_check(p) (void*)p
+
 SocialNetworkWindow::SocialNetworkWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::SocialNetworkWindow)
     , id(-1)
     , user()
 {
-    int ret = network.readUsers("/home/focus/dev/uni/csci-062/example/users.txt");
+    int ret = network.readUsers("users.txt");
     if (ret < 0) throw;
-    ret = network.readPosts("/home/focus/dev/uni/csci-062/example/posts.txt");
+    ret = network.readPosts("posts.txt");
     if (ret < 0) throw;
 
     ui->setupUi(this);
@@ -17,12 +20,17 @@ SocialNetworkWindow::SocialNetworkWindow(QWidget *parent)
     ui->login_error->hide();
     ui->profile_friends_table->setColumnCount(1);
 
+    ui->profile_home->hide();
+    ui->profile_add->hide();
+
     // login ports
     QObject::connect(ui->login_button, &QPushButton::clicked, this, &SocialNetworkWindow::login);
 
     // profile ports
     QObject::connect(ui->profile_home, &QPushButton::clicked, this, &SocialNetworkWindow::gohome);
+    QObject::connect(ui->profile_add, &QPushButton::clicked, this, &SocialNetworkWindow::addfriend);
     QObject::connect(ui->profile_friends_table, &QTableWidget::cellClicked, this, &SocialNetworkWindow::gofriend);
+    QObject::connect(ui->profile_suggested_table, &QTableWidget::cellClicked, this, &SocialNetworkWindow::addsuggestedfriend);
 }
 
 SocialNetworkWindow::~SocialNetworkWindow() {
@@ -49,16 +57,46 @@ void SocialNetworkWindow::login() {
 void SocialNetworkWindow::showprofile(int newuser) {
     User *u = network.getUser(newuser);
 
-    this->user.select(u, newuser == id);
+    this->user.select(u, this->id);
 
     if (newuser == this->id) {
         // this user
         ui->profile_label->setText(QString("My Profile"));
         ui->profile_home->hide();
+
+        ui->profile_add->hide();
+
+
+        ui->profile_suggested_lable->show();
+        ui->profile_suggested_table->show();
+        int score;
+        auto suggestions = this->network.suggestFriends(newuser, score);
+        ui->profile_suggested_table->setRowCount(suggestions.size());
+
+        int index = 0;
+        for (auto f : suggestions) {
+            User *uf = this->network.getUser(f);
+            auto it = new QTableWidgetItem(QString::fromStdString(uf->getName()));
+            ui->profile_suggested_table->setItem(index, 0, it);
+            index += 1;
+        }
+
     } else {
         // other user
         ui->profile_label->setText(QString::asprintf("%s's Profile", u->getName().c_str()));
         ui->profile_home->show();
+
+        ui->profile_suggested_lable->hide();
+        ui->profile_suggested_table->hide();
+
+        auto me = this->network.getUser(this->id);
+        auto myfr = me->getFriends();
+        if (myfr.find(newuser) == myfr.end()) {
+            ui->profile_add->show();
+        } else {
+            ui->profile_add->hide();
+        }
+
     }
 
     ui->profile_friends_table->clear();
@@ -68,6 +106,7 @@ void SocialNetworkWindow::showprofile(int newuser) {
 
     int index = 0;
     for (auto f : fr) {
+        // printf("thing %d\n", index);
         User *uf = this->network.getUser(f);
 
         // this call takes owevership of the object
@@ -76,8 +115,8 @@ void SocialNetworkWindow::showprofile(int newuser) {
         index += 1;
     }
 
-    ui->profile_post_list->setModel(user.model);
 
+     ui->profile_post_list->setModel(user.model);
 }
 
 void SocialNetworkWindow::gohome() {
@@ -105,3 +144,37 @@ void SocialNetworkWindow::gofriend(int row, int col) {
     // printf("wassup poss %d, %d\n", row, col);
 }
 
+void SocialNetworkWindow::addsuggestedfriend(int row, int col) {
+    User *u = this->network.getUser(this->user.id);
+    null_check(u);
+
+    auto it = ui->profile_suggested_table->item(row, col);
+    auto text = it->text();
+    int s = this->network.getId(text.toStdString());
+
+    User *f = this->network.getUser(s);
+    null_check(u);
+
+    u->addFriend(s);
+    f->addFriend(u->getId());
+
+    this->network.writeUsers("users.txt");
+
+    SocialNetworkWindow::showprofile(this->user.id);
+}
+
+void SocialNetworkWindow::addfriend() {
+    User *u = this->network.getUser(this->id);
+    null_check(u);
+    User *f = this->network.getUser(this->user.id);
+    null_check(f);
+
+    u->addFriend(this->user.id);
+    f->addFriend(this->id);
+
+    this->network.writeUsers("users.txt");
+
+    this->ui->profile_add->hide();
+
+    SocialNetworkWindow::showprofile(this->user.id);
+}

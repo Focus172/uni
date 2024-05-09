@@ -30,7 +30,7 @@ public:
   /// pre: fname is a non-null string
   /// post: attempts to write users to the given file name creating it if needed
   ///       returns -1 if file could not be opened
-  int writeUsers(char *fname);
+  int writeUsers(const char *fname);
   /// pre: none
   /// post: returns the number user
   int numUsers();

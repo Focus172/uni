@@ -244,7 +244,7 @@ cleanup:
   return code;
 }
 
-int Network::writeUsers(char *fname) {
+int Network::writeUsers(const char *fname) {
   std::ofstream f = std::ofstream();
   f.open(fname);
   if (!f.is_open()) {
@@ -627,6 +627,8 @@ int Network::readPosts(const char *fname) {
         fprintf(stderr, "unknown message publicity: %s\n", type.c_str());
         goto cleanup;
       }
+
+      author = author.substr(1);
 
       Post *p = new IncomingPost(id, owner, msg, likes, publ, author);
       u->addPost(p);

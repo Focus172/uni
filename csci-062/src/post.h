@@ -13,11 +13,11 @@ private:
 public:
   Post();
   Post(int messageId, int ownerId, std::string message, int likes);
-  std::string toString();
   int getMessageId();
   int getOwnerId();
   std::string getMessage();
   int getLikes();
+  virtual std::string toString();
   virtual std::string getAuthor();
   virtual bool getIsPublic();
 };

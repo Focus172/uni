@@ -16,6 +16,9 @@ int main() {
   cout << endl;
   list_head_remove(head, tail);
   list_head_remove(nh, nt);
+
+  list_copy(nh, nt, nh2, nt2); // NEW: next line would acsess garbage data
+                               // without this initialization
   list_head_remove(nh2, nt2);
   cout << head;
   cout << endl;
