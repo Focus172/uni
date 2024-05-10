@@ -42,7 +42,6 @@ public:
     ~SocialNetworkWindow();
 
     void login();
-    void likepost(int id);
 
     void showprofile(int user);
     void gohome();

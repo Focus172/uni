@@ -72,8 +72,8 @@ public:
 
   /// pre: ownerId is a valid user id
   /// post: the user has a post added to them
-  void addPost(int ownerId, std::string message, std::set<int> likes,
-               bool isIncoming, std::string authorName, bool isPublic);
+  // void addPost(int ownerId, std::string message, std::set<int> likes,
+               // bool isIncoming, std::string authorName, bool isPublic);
 
   /// pre: ownerId is a valid user id
   /// post: the posts string are returned
@@ -88,7 +88,7 @@ public:
   ///       < 0 and the data in this network is undefined.
   int read_posts_json(const char *fname);
 
-  int writePosts(char *fname);
+  int writePosts(const char *fname);
 
   int write_posts_json(const char *fname);
 };

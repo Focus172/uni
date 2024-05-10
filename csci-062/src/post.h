@@ -1,6 +1,7 @@
 #ifndef POST_H
 #define POST_H
 
+#include <cstdlib>
 #include <set>
 #include <string>
 
@@ -15,6 +16,15 @@ private:
 public:
   Post();
   Post(int messageId, int ownerId, std::string message, std::set<int> likes);
+  Post(int messageId, int ownerId, std::string message, int likes) {
+
+    std::set<int> tlikes;
+    for (int i = 0; i < likes; i++) {
+      tlikes.insert(rand());
+    }
+
+    *this = Post(messageId, ownerId, message, tlikes);
+  }
 
   int getMessageId();
   int getOwnerId();
@@ -37,6 +47,15 @@ public:
   IncomingPost();
   IncomingPost(int messageId, int ownerId, std::string message,
                std::set<int> likes, bool isPublic, std::string author);
+  IncomingPost(int messageId, int ownerId, std::string message, int likes,
+               bool isPublic, std::string author) {
+
+    std::set<int> tlikes;
+    for (int i = 0; i < likes; i++) {
+      tlikes.insert(rand());
+    }
+    *this = IncomingPost(messageId, ownerId, message, tlikes, isPublic, author);
+  }
   std::string toString();
   std::string getAuthor();
   bool getIsPublic();

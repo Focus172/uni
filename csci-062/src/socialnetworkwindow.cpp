@@ -7,11 +7,9 @@
 SocialNetworkWindow::SocialNetworkWindow(QWidget *parent)
     : QMainWindow(parent), id(-1), user() {
   int ret = network.readUsers("users.txt");
-  if (ret < 0)
-    throw;
+  if (ret < 0) throw;
   ret = network.readPosts("posts.txt");
-  if (ret < 0)
-    throw;
+  if (ret < 0) throw;
 
   ui = new SocialNetworkWindowUi(this);
 
@@ -150,14 +148,14 @@ void SocialNetworkWindow::gofriend(int row, int col) {
 
 void SocialNetworkWindow::addsuggestedfriend(int row, int col) {
   User *u = this->network.getUser(this->user.id);
-  null_check(u);
+  thrownull(u);
 
   auto it = ui->profile_suggested_table->item(row, col);
   auto text = it->text();
   int s = this->network.getId(text.toStdString());
 
   User *f = this->network.getUser(s);
-  null_check(u);
+  thrownull(u);
 
   u->addFriend(s);
   f->addFriend(u->getId());
@@ -169,9 +167,9 @@ void SocialNetworkWindow::addsuggestedfriend(int row, int col) {
 
 void SocialNetworkWindow::addfriend() {
   User *u = this->network.getUser(this->id);
-  null_check(u);
+  thrownull(u);
   User *f = this->network.getUser(this->user.id);
-  null_check(f);
+  thrownull(f);
 
   u->addFriend(this->user.id);
   f->addFriend(this->id);
@@ -182,5 +180,3 @@ void SocialNetworkWindow::addfriend() {
 
   SocialNetworkWindow::showprofile(this->user.id);
 }
-
-void SocialNetworkWindow::likepost(int id) {}
