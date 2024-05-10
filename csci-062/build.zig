@@ -130,11 +130,34 @@ pub fn build(b: *std.Build) void {
         tests.dependOn(&unit_test.step);
     }
 
-    // const win = b.addExecutable(.{
-    //     .name = "social-network-window",
-    //     .target = target,
-    //     .optimize = optimize,
-    // });
-    // win.addCSourceFiles(&.{ "src/social_network.cpp", "src/user.cpp", "src/network.cpp", "src/post.cpp" }, &c_options);
-    // win.linkLibCpp();
+    // -I/nix/store/2iwq8d7003b3yzdi34c0mhq9isjmgl5f-qt-full-6.6.1/mkspecs/linux-g++
+    const win = b.addExecutable(.{
+        .name = "social-network-window",
+        .target = target,
+        .optimize = optimize,
+    });
+    win.addCSourceFiles( // files
+        &.{ // t
+        "src/main.cpp",
+        "src/user.cpp",
+        "src/network.cpp",
+        "src/post.cpp",
+        "src/socialnetworkwindow.cpp",
+        "src/moc_socialnetworkwindow.cpp",
+    }, &.{ // libs
+        "-D_REENTRANT",                                                              "-DQT_NO_DEBUG",                                                                 "-DQT_WIDGETS_LIB",                                                             "-DQT_GUI_LIB",
+        "-DQT_CORE_LIB",                                                             "-I/nix/store/iy0lh6d3l7a57qlf7xx3cxn50bxcvx8v-qtbase-6.6.1/include",            "-I/nix/store/iy0lh6d3l7a57qlf7xx3cxn50bxcvx8v-qtbase-6.6.1/include/QtWidgets", "-I/nix/store/iy0lh6d3l7a57qlf7xx3cxn50bxcvx8v-qtbase-6.6.1/include/QtGui",
+        "-I/nix/store/iy0lh6d3l7a57qlf7xx3cxn50bxcvx8v-qtbase-6.6.1/include/QtCore", "/nix/store/iy0lh6d3l7a57qlf7xx3cxn50bxcvx8v-qtbase-6.6.1/lib/libQt6Widgets.so", "/nix/store/iy0lh6d3l7a57qlf7xx3cxn50bxcvx8v-qtbase-6.6.1/lib/libQt6Gui.so",
+        "/nix/store/iy0lh6d3l7a57qlf7xx3cxn50bxcvx8v-qtbase-6.6.1/lib/libQt6Core.so",
+
+        // libs
+        // "-lQt6Core",
+        // "-lQt6Gui",
+        // "-lpthread",
+        // "-lGLX",
+        // "-lOpenGL",
+    });
+    win.linkLibCpp();
+
+    b.installArtifact(win);
 }

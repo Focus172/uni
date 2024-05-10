@@ -12,17 +12,18 @@ SOURCES += \
     src/main.cpp \
     src/network.cpp \
     src/post.cpp \
+    src/postwidget.cpp \
     src/user.cpp \
     src/socialnetworkwindow.cpp
 
 HEADERS += \
     src/network.h \
     src/post.h \
+    src/postwidget.h \
     src/user.h \
     src/socialnetworkwindow.h
 
-FORMS += \
-    src/socialnetworkwindow.ui
+# FORMS += src/socialnetworkwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

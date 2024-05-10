@@ -1,0 +1,10 @@
+[
+    {
+        "id": 0,
+        "message": "The llama couldn't resist trying the lemonade.",
+        "author": 132,
+        "likes": [3, 2, 92, 18, 32, 90],
+        "public": null,
+        "recipient": null
+    }
+]

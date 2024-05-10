@@ -5,6 +5,7 @@
 #include <QStringListModel>
 #include <QAbstractItemView>
 #include "network.h"
+#include "socialnetworkwindowui.h"
 
 class SelectedUser {
 public:
@@ -32,10 +33,6 @@ public:
 };
 
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class SocialNetworkWindow; }
-QT_END_NAMESPACE
-
 class SocialNetworkWindow : public QMainWindow
 {
     Q_OBJECT
@@ -45,6 +42,7 @@ public:
     ~SocialNetworkWindow();
 
     void login();
+    void likepost(int id);
 
     void showprofile(int user);
     void gohome();
@@ -54,7 +52,7 @@ public:
     void addsuggestedfriend(int row, int col);
 
 private:
-    Ui::SocialNetworkWindow *ui;
+    SocialNetworkWindowUi *ui;
     Network network;
 
     int id;

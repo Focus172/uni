@@ -6,6 +6,7 @@
 
 class Network {
 private:
+public:
   std::vector<User *> users_;
 
 public:
@@ -71,15 +72,25 @@ public:
 
   /// pre: ownerId is a valid user id
   /// post: the user has a post added to them
-  void addPost(int ownerId, std::string message, int likes, bool isIncoming,
-               std::string authorName, bool isPublic);
+  void addPost(int ownerId, std::string message, std::set<int> likes,
+               bool isIncoming, std::string authorName, bool isPublic);
 
   /// pre: ownerId is a valid user id
   /// post: the posts string are returned
   std::string getPostsString(int ownerId, int howMany, bool showOnlyPublic);
 
   int readPosts(const char *fname);
+
+  /// pre:  takes a file name to a valid file that contains json serialized post
+  ///       data
+  /// post: if reading and parsing was sucsessful then 0 is returned and this
+  ///       network now has the data of the file, if anythin fails it returns
+  ///       < 0 and the data in this network is undefined.
+  int read_posts_json(const char *fname);
+
   int writePosts(char *fname);
+
+  int write_posts_json(const char *fname);
 };
 
 #endif // !NETWORK_H

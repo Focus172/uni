@@ -1,9 +1,6 @@
 #include "network.h"
 #include "post.h"
 #include "user.h"
-#include "util.h"
-
-#include "json.hpp"
 
 #include <algorithm>
 #include <assert.h>
@@ -17,8 +14,6 @@
 #include <sstream>
 #include <string>
 #include <utility>
-
-using nlohmann::json;
 
 void debug_user(User *u) {
   std::cout << "User { \n";
@@ -514,7 +509,7 @@ std::vector<std::vector<int>> Network::groups() {
   return groups;
 }
 
-void Network::addPost(int ownerId, std::string message, std::set<int> likes,
+void Network::addPost(int ownerId, std::string message, int likes,
                       bool isIncoming, std::string authorName, bool isPublic) {
   User *u = this->getUser(ownerId);
 
@@ -537,77 +532,115 @@ std::string Network::getPostsString(int ownerId, int howMany,
   return u->getPostsString(howMany, showOnlyPublic);
 }
 
-// #define handle_fscanf_err(ret)                                                 \
-//   switch (ret) {                                                               \
-//   case EOF:                                                                    \
-//     fprintf(stderr, "Unexpected EOF in stream.\n");                            \
-//     goto cleanup;                                                              \
-//   case 0:                                                                      \
-//     fprintf(stderr, "[%s:%d]: Ill formatted file.\n", __FILE__, __LINE__);     \
-//     goto cleanup;                                                              \
-//   }
-//
-// #define scan_error(f) \
-//   if (!f) { \
-//     fprintf(stderr, "[%s:%d]: Ill formatted file.\n", __FILE__, __LINE__); \
-//     goto cleanup; \
-//   }
+#define handle_fscanf_err(ret)                                                 \
+  switch (ret) {                                                               \
+  case EOF:                                                                    \
+    fprintf(stderr, "Unexpected EOF in stream.\n");                            \
+    goto cleanup;                                                              \
+  case 0:                                                                      \
+    fprintf(stderr, "[%s:%d]: Ill formatted file.\n", __FILE__, __LINE__);     \
+    goto cleanup;                                                              \
+  }
 
-int Network::readPosts(const char *fname) {}
+#define scan_error(f)                                                          \
+  if (!f) {                                                                    \
+    fprintf(stderr, "[%s:%d]: Ill formatted file.\n", __FILE__, __LINE__);     \
+    goto cleanup;                                                              \
+  }
 
-int Network::read_posts_json(const char *fname) {
-  nlohmann::json j;
+int Network::readPosts(const char *fname) {
+  std::ifstream f(fname);
+  if (!f.is_open()) {
+    printf("could not open file %s \n", fname);
+    return -1;
+  }
 
-  std::ifstream f("posts.json");
-  f >> j;
+  // 1: single number representing how many posts are in the file
+  int nusers;
+  f >> nusers;
+  scan_error(f);
 
-  assert(j.is_array());
-  for (auto post : j) {
-    auto v_id = post["id"];
-    gaurd(v_id.is_number_integer());
-    int id = v_id.get<int>();
+  for (;;) {
+    // 2: messageId_0
+    int id;
+    f >> id;
+    if (f.eof()) {
+      break;
+    }
+    scan_error(f);
+    // fprintf(stderr, "got id: %d\n", id);
 
-    auto v_author = post["author"];
-    gaurd(v_author.is_number_integer());
-    int authorid = v_author.get<int>();
+    f.ignore(2);
+    // 3: <TAB>message text
+    std::string msg;
+    std::getline(f, msg);
+    scan_error(f);
 
-    auto v_message = post["message"];
-    gaurd(v_message.is_string());
-    std::string message = v_message.get<std::string>();
+    // fprintf(stderr, "got msg: %s\n", msg.c_str());
 
-    auto v_likes = post["likes"];
-    gaurd(v_likes.is_array());
-    std::set<int> likes = v_likes.template get<std::set<int>>();
+    // 4: <TAB>ownerId
+    int owner;
 
-    auto v_public = post["public"];
-    auto v_recipient = post["recipient"];
+    // 5: <TAB>likes
+    int likes;
 
-    // if there is data for both of those feilds then if it is not incomming
-    bool incomming = !v_public.is_null() && !v_public.is_null();
+    f >> owner >> likes;
+    scan_error(f);
 
-    if (incomming) {
-      gaurd(v_recipient.is_number_integer());
-      int recipient = v_recipient.template get<int>();
+    // fprintf(stderr, "got owner: %d\n", owner);
+    // fprintf(stderr, "got likes: %d\n", likes);
 
-      User *u = this->getUser(recipient);
+    f.ignore(1);
 
-      gaurd(v_public.is_boolean());
-      bool ispublic = v_public.template get<bool>();
+    // 6: <TAB>an empty line if the message is an owner Post OR the string
+    // "public" or "private" if the message is an IncomingPost
+    std::string type;
+    std::getline(f, type);
+    scan_error(f);
 
-      auto auth = this->getUser(authorid);
-      std::string author = auth->getName();
+    // fprintf(stderr, "got type: %s\n", type.c_str());
 
-      Post *p =
-          new IncomingPost(id, recipient, message, likes, ispublic, author);
+    // 7: <TAB>an empty line if the message is an owner Post OR an author
+    // if the message is an IncomingPost
+    std::string author;
+    std::getline(f, author);
+    scan_error(f);
+
+    // fprintf(stderr, "got author: %s\n", author.c_str());
+
+    User *u = this->getUser(owner);
+    if (u == nullptr) {
+      continue;
+    }
+
+    if (type.size() == 0) {
+      Post *p = new Post(id, owner, msg, likes);
       u->addPost(p);
-
     } else {
-      User *u = this->getUser(authorid);
-      Post *p = new Post(id, authorid, message, likes);
+
+      bool publ;
+      if (type == "\tprivate") {
+        publ = false;
+      } else if (type == "\tpublic") {
+        publ = true;
+      } else {
+        fprintf(stderr, "unknown message publicity: %s\n", type.c_str());
+        goto cleanup;
+      }
+
+      author = author.substr(1);
+
+      Post *p = new IncomingPost(id, owner, msg, likes, publ, author);
       u->addPost(p);
     }
   }
+
+  f.close();
   return 0;
+
+cleanup:
+  f.close();
+  return -1;
 }
 
 // To implement writePosts, you should load all of the posts from all the
@@ -616,22 +649,40 @@ int Network::read_posts_json(const char *fname) {
 // write the posts in that order to a file. To call sort function, you
 // should implement a comparison function for comparing two Post pointers.
 int Network::writePosts(char *fname) {
-  json j = json::array();
-
   std::ofstream f(fname);
 
+  std::vector<Post *> posts;
   for (auto u : this->users_) {
     auto s = u->getPosts();
     for (auto p : s) {
-      j.push_back({{"author", p->getAuthor()},
-                   {"message", p->getMessage()},
-                   {"owner", p->getOwnerId()},
-                   {"public", p->getIsPublic()},
-                   {"id", p->getMessageId()}});
+      posts.push_back(p);
     }
   }
+  // 1: single number representing how many posts are in the file
+  f << posts.size() << "\n";
 
-  f << j;
+  std::sort(posts.begin(), posts.end(), [](Post *&lhs, Post *&rhs) {
+    return lhs->getMessageId() < rhs->getMessageId();
+  });
 
-  return 0;
+  for (Post *p : posts) {
+    // 2: messageId_0
+    f << p->getMessageId() << "\n";
+    // 3: <TAB>message text
+    f << "\t" << p->getMessage() << "\n";
+    // 4: <TAB>ownerId
+    f << "\t" << p->getOwnerId() << "\n";
+    // 5: <TAB>likes
+    f << "\t" << p->getLikes() << "\n";
+    // 6: <TAB>an empty line if the message is an owner Post OR the string
+    // "public" or "private" if the message is an IncomingPost
+    // fprintf(stderr, "TODO: %s, %s:%d", __FUNCTION__, __FILE__, __LINE__);
+    f << "\t" << "\n";
+    // 7: <TAB>an empty line if the message is an owner Post OR an author
+    // if the message is an IncomingPost
+    // fprintf(stderr, "TODO: %s, %s:%d", __FUNCTION__, __FILE__, __LINE__);
+    f << "\t" << "\n";
+  }
+
+  return -1;
 }
