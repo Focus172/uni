@@ -5,11 +5,14 @@
 #include <cstdlib>
 
 SocialNetworkWindow::SocialNetworkWindow(QWidget *parent)
-    : QMainWindow(parent), id(-1), user() {
+    : QMainWindow(parent), id(-1), user(), curr() {
+
   int ret = network.readUsers("users.txt");
-  if (ret < 0) throw;
+  if (ret < 0)
+    throw;
   ret = network.readPosts("posts.txt");
-  if (ret < 0) throw;
+  if (ret < 0)
+    throw;
 
   ui = new SocialNetworkWindowUi(this);
 

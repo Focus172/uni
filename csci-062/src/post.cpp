@@ -28,10 +28,14 @@ std::string Post::toString() {
 int Post::getMessageId() { return this->messageId_; }
 int Post::getOwnerId() { return this->ownerId_; }
 std::string Post::getMessage() { return this->message_; }
-bool Post::is_liked(int id) { return this->likes.find(id) != this->likes.end(); }
+bool Post::is_liked(int id) {
+  return this->likes.find(id) != this->likes.end();
+}
 void Post::set_liked(int id, bool liked) {
-  if (liked) this->likes.insert(id);
-  else this->likes.erase(id);
+  if (liked)
+    this->likes.insert(id);
+  else
+    this->likes.erase(id);
 }
 
 // ## Functions to be overwritten
@@ -44,8 +48,11 @@ bool Post::getIsPublic() { return true; }
 IncomingPost::IncomingPost() : Post::Post() {}
 
 IncomingPost::IncomingPost(int messageId, int ownerId, std::string message,
-                           std::set<int> likes, bool isPublic, std::string author)
-    : Post(messageId, ownerId, message, likes) {
+                           std::set<int> likes, bool isPublic,
+                           std::string author)
+    : Post(messageId, ownerId, message, likes)
+
+{
   this->isPublic_ = isPublic;
   this->author_ = author;
 }

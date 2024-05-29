@@ -1,53 +1,46 @@
 #ifndef POSTWIDGET_H
 #define POSTWIDGET_H
 
-#include <QWidget>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QPushButton>
 #include "post.h"
+#include <QWidget>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
 
 namespace ui {
-  class postwidget {
-  public:
-    QHBoxLayout *div;
-    QPushButton *like;
-    QLabel      *text;
+class postwidget {
+public:
+  QHBoxLayout *div;
+  QPushButton *like;
+  QLabel *text;
 
-    postwidget(QWidget *parent) {
-      div = new QHBoxLayout();
+  postwidget(QWidget *parent) {
+    div = new QHBoxLayout();
 
+    text = new QLabel(parent);
+    text->setText(QString("hellow world"));
+    div->addWidget(text);
 
-      text = new QLabel(parent);
-      text->setText(QString("hellow worl"));
-      div->addWidget(text);
-
-      like = new QPushButton(parent);
-      div->addWidget(like);
-
-    }
-  };
+    like = new QPushButton(parent);
+    div->addWidget(like);
+  }
 };
+}; // namespace ui
 
-
-class postwidget : public QWidget
-{
-    Q_OBJECT
+class postwidget : public QWidget {
+  Q_OBJECT
 
 public:
-    explicit postwidget(Post *post, int *id, QWidget *parent = nullptr);
-    ~postwidget();
-
-// signals:
-//     void liked(int id);
+  explicit postwidget(Post *post, int *id, QWidget *parent = nullptr);
+  ~postwidget();
 
 private:
-    void postliked();
+  void postliked();
 
-    Post *post;
+  Post *post;
 
-    int *id;
-    ui::postwidget *ui;
+  int *id;
+  ui::postwidget *ui;
 };
 
 #endif // POSTWIDGET_H

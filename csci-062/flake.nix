@@ -13,14 +13,15 @@
       pkgs = import nixpkgs {inherit system;};
     in {
       devShells = rec {
-        default = jupyter;
-        jupyter = pkgs.mkShell {
+        # default = tbonet;
+        tbonet = pkgs.mkShell {
           buildInputs = with pkgs; [
             # pyright
             (python3.withPackages (ps:
               with ps; [
                 ipython
                 jupyter
+                notebook
 
                 numpy
                 pandas
@@ -29,7 +30,7 @@
                 scikit-learn
               ]))
           ];
-          shellHook = "jupyter notebook";
+          # shellHook = "jupyter notebook";
         };
         qnetwork = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [ qt6.qmake ];
