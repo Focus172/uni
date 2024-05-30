@@ -1,0 +1,324 @@
+#+title: Minilab 3 - Git
+#+Author: Evan Stokdyk
+#+OPTIONS: toc:nil
+
+* README :noexport:
+This code needs to be run before every session to clean the old git repo.
+#+begin_src bash :dir .
+rm -rf tmp
+unzip src.zip -d tmp
+#+end_src
+
+#+RESULTS:
+| Archive:    | src.zip         |
+| extracting: | tmp/file1.txt   |
+| extracting: | tmp/file2.txt   |
+| inflating:  | tmp/file3.txt   |
+| inflating:  | tmp/hello.cpp   |
+| inflating:  | tmp/myclass.cpp |
+| inflating:  | tmp/myclass.h   |
+
+* Configuration
+The first step is to set up git information so people can see who created these changes.
+#+begin_src bash :dir tmp
+git config user.name "evan stokdyk"
+git config user.email "evan.stokdyk@gmail.com"
+
+git config init.default branch main
+#+end_src
+
+* Initialization
+Next, you can creating the initial repository.
+#+begin_src bash :results verbatim :exports both :dir tmp
+git init
+git status
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Initialized empty Git repository in /home/focus/dev/uni/csci-062/labs/4/tmp/.git/
+On branch main
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	file1.txt
+	file2.txt
+	file3.txt
+	hello.cpp
+	myclass.cpp
+	myclass.h
+
+nothing added to commit but untracked files present (use "git add" to track)
+#+end_example
+
+* Adding Files
+Files that are staged can be committed with a message.
+#+begin_src bash :results verbatim :exports both :dir tmp
+git add hello.cpp
+git commit -m "First commit"
+#+end_src
+
+#+RESULTS:
+: [main (root-commit) f1c4e06] First commit
+:  1 file changed, 11 insertions(+)
+:  create mode 100644 hello.cpp
+
+It is easy to check that the changes were recorded.
+#+begin_src bash :results verbatim :exports both :dir tmp
+git log
+#+end_src
+
+#+RESULTS:
+: commit f1c4e0651ad3f507e39d2c0c171c37dd59ba6415
+: Author: evan stokdyk <evan.stokdyk@gmail.com>
+: Date:   Thu May 30 12:45:38 2024 -0700
+:
+:     First commit
+
+* Ignoring Files
+To ignore files list them in a git ignore file.
+#+begin_src bash :results verbatim :exports both :dir tmp
+touch .gitignore
+git status
+#+end_src
+
+#+RESULTS:
+#+begin_example
+On branch main
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.gitignore
+	file1.txt
+	file2.txt
+	file3.txt
+	myclass.cpp
+	myclass.h
+
+nothing added to commit but untracked files present (use "git add" to track)
+#+end_example
+
+Adding file names to this file causes them to be no longer shown in the unstaged files.
+#+begin_src bash :results verbatim :exports both :dir tmp
+echo "myclass.h" >> .gitignore
+git status
+#+end_src
+
+#+RESULTS:
+#+begin_example
+On branch main
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.gitignore
+	file1.txt
+	file2.txt
+	file3.txt
+	myclass.cpp
+
+nothing added to commit but untracked files present (use "git add" to track)
+#+end_example
+
+Files can also be ignored using globs. Comments being with '#' and have no effect.
+#+begin_src bash :results verbatim :exports both :dir tmp
+echo '*.txt' >> .gitignore
+echo '# This is a comment' >> .gitignore
+git status
+#+end_src
+
+#+RESULTS:
+: On branch main
+: Untracked files:
+:   (use "git add <file>..." to include in what will be committed)
+: 	.gitignore
+: 	myclass.cpp
+:
+: nothing added to commit but untracked files present (use "git add" to track)
+
+#+begin_src bash :results verbatim :exports both :dir tmp
+cat .gitignore
+#+end_src
+
+#+RESULTS:
+: myclass.h
+: *.txt
+: # This is a comment
+
+# git reset --hard HEAD~1
+
+Add Rest
+#+begin_src bash :results verbatim :exports both :dir tmp
+git add .
+git commit -m "Add all files"
+#+end_src
+
+#+RESULTS:
+: [main b14fd81] Add all files
+:  2 files changed, 15 insertions(+)
+:  create mode 100644 .gitignore
+:  create mode 100644 myclass.cpp
+
+* Editing
+Changes to file can be observed as differences.
+#+begin_src bash :results verbatim :exports both :dir tmp
+sed -i -e 's/x = x_;/x = 2 * x_;/' myclass.cpp
+git diff
+#+end_src
+
+#+RESULTS:
+#+begin_example
+diff --git a/myclass.cpp b/myclass.cpp
+index 5983a1c..041e45a 100644
+--- a/myclass.cpp
++++ b/myclass.cpp
+@@ -4,7 +4,7 @@ MyClass::MyClass() {
+ }
+
+ MyClass::MyClass(int x_) {
+-  x = x_;
++  x = 2 * x_;
+ }
+
+ int MyClass::getX() {
+#+end_example
+
+* More Git Add
+You can add and commit changes in one line!
+#+begin_src bash :results verbatim :exports both :dir tmp
+echo "// important documentation" >> myclass.h
+sed -i -e 's/Hello World/Yeah, Git!/' hello.cpp
+git commit -a -m "description"
+#+end_src
+
+#+RESULTS:
+: [main 5f9b3b1] description
+:  2 files changed, 2 insertions(+), 2 deletions(-)
+
+* Branches
+** Simple Branches
+Branches help you create different versions of a file on one machine.
+#+begin_src bash :dir tmp
+git branch mybranch
+git switch mybranch
+#+end_src
+
+Files can be edited and commited on a branch.
+#+begin_src bash :results verbatim :exports both :dir tmp
+sed -i -e 's/" << endl/" << "\\n"/' hello.cpp
+git commit -a -m "remove useless buffer flush"
+#+end_src
+
+#+RESULTS:
+: [mybranch 2c6ddc3] remove useless buffer flush
+:  1 file changed, 1 insertion(+), 1 deletion(-)
+
+The changes can are local to that branch.
+#+begin_src bash :results verbatim :exports both :dir tmp
+git log | head
+#+end_src
+
+#+RESULTS:
+#+begin_example
+commit 2c6ddc365fc162aa12ab76148d1aea9c1193ff62
+Author: evan stokdyk <evan.stokdyk@gmail.com>
+Date:   Thu May 30 12:46:42 2024 -0700
+
+    remove useless buffer flush
+
+commit 5f9b3b1f3840f5cf01dd850ef2e38951677c6d90
+Author: evan stokdyk <evan.stokdyk@gmail.com>
+Date:   Thu May 30 12:46:07 2024 -0700
+
+#+end_example
+
+Branches can be merged to combine work from different sources.
+#+begin_src bash :results verbatim :exports both :dir tmp
+git checkout main
+git merge -m "message" mybranch
+#+end_src
+
+#+RESULTS:
+: Updating 5f9b3b1..2c6ddc3
+: Fast-forward (no commit created; -m option ignored)
+:  hello.cpp | 2 +-
+:  1 file changed, 1 insertion(+), 1 deletion(-)
+
+The changes from the other branch appear as if they were created on this branch now!
+#+begin_src bash :results verbatim :exports both :dir tmp
+git log | head -n 12
+#+end_src
+
+#+RESULTS:
+#+begin_example
+commit 2c6ddc365fc162aa12ab76148d1aea9c1193ff62
+Author: evan stokdyk <evan.stokdyk@gmail.com>
+Date:   Thu May 30 12:46:42 2024 -0700
+
+    remove useless buffer flush
+
+commit 5f9b3b1f3840f5cf01dd850ef2e38951677c6d90
+Author: evan stokdyk <evan.stokdyk@gmail.com>
+Date:   Thu May 30 12:46:07 2024 -0700
+
+    description
+
+#+end_example
+
+** Merge Conflicts
+A merge conflict happense when changes happen to a file that git cannot resolve together. This usually happens when the same line is changed.
+#+begin_src bash :results verbatim :dir tmp
+sed -i -e 's/5/4/' hello.cpp
+git commit -a -m "lower X"
+git checkout mybranch
+sed -i -e 's/5/6/' hello.cpp
+git commit -a -m "raise X"
+git checkout main
+#+end_src
+
+#+RESULTS:
+: [main 33ae51a] lower X
+:  1 file changed, 1 insertion(+), 1 deletion(-)
+: [mybranch 30598cc] raise X
+:  1 file changed, 1 insertion(+), 1 deletion(-)
+
+When trying to merge, it will fail putting our local files into a strange state to resolve the conflict.
+#+begin_src bash :results verbatim :exports both :dir tmp
+git merge -m "message" mybranch
+#+end_src
+
+#+RESULTS:
+: Auto-merging hello.cpp
+: CONFLICT (content): Merge conflict in hello.cpp
+: Automatic merge failed; fix conflicts and then commit the result.
+
+Resolving the conflict also requires removing the indicators git places in the files.
+#+begin_src bash :dir tmp
+sed -i -e '/HEAD/d;/4/d;/===/d;/mybranch/d' hello.cpp
+#+end_src
+
+#+RESULTS:
+
+Once it is done the merge can be finished with a commmit to name it.
+#+begin_src bash :results verbatim :exports both :dir tmp
+git commit -a -m "fix merge conflict"
+# git branch -d mybranch
+#+end_src
+
+#+RESULTS:
+: [main 7a70270] fix merge conflict
+: Deleted branch mybranch (was 30598cc).
+
+* Publishing
+** Creating Remote
+To create a remote repository, use the ui at 'github.com' to create a new repository.
+
+** Pushing Code
+Using the repository you just created replace 'REMOTE_NAME' with the link you just created.
+
+#+begin_src bash :results verbatim :dir tmp :eval no-export
+git remote add origin REMOTE_NAME
+git push -u origin main
+#+end_src
+
+** This Code
+This document is hosted online [[https://github.com/focus172/uni/tree/main/csci-062/labs][here]].

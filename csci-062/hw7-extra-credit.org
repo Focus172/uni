@@ -1,0 +1,136 @@
+#+Title: HW7 Extra Credit
+#+Author: Evan Stokdyk
+
+* Problem
+Suppose d ≥ 101 is an odd integer.
+
+Consider a binary classification task with input:
+: x_1, x_2, . . . , x_d ∈ [0, 1]
+and with the output:
+: Y = 1 if x1 + x2 + · · · + xd > d/2 else 0
+
+Suppose we have a Decision Tree classifier that is correct for all inputs that are “not too close to boundary.”
+
+More precisely:
++ all inputs (x1, . . . , xd) satisfying x1 + x2 + · · · + xd ≤ (d − 1)/2 are classified correctly as Y = 0
++ all inputs (x1, . . . , xd) satisfying x1 + x2 + · · · + xd ≥ (d + 1)/2 are classified correctly as Y = 1.
++ all other inputs can be classified as either Y = 0 or Y = 1.
+
+Show that any Decision Tree classifier satisfying the above properties must have at least
+: choose(d, (d−1)/2)
+leaf nodes.
+
+* Visualization
+This problem can be visuallized as such
+
+#+begin_src python :results output :exports both :session visualization
+import random
+import pandas as pd
+
+random.seed(42)
+
+d = 3
+size = 100 # The amount of input row to the model. Assumed to be infinate in the abstract
+
+data = []
+
+for _ in range(size):
+    r = [random.random() for _ in range(d)]
+    s = sum(r)
+    y = 1 if s > (d / 2) else 0
+    data.append([*r, y])
+
+columns = [f'x{i+1}' for i in range(d)] + ['Y']
+
+df = pd.DataFrame(data, columns=columns)
+
+print(df.head(4))
+#+end_src
+
+#+RESULTS:
+:          x1        x2        x3  Y
+: 0  0.639427  0.025011  0.275029  0
+: 1  0.223211  0.736471  0.676699  1
+: 2  0.892180  0.086939  0.421922  0
+: 3  0.029797  0.218638  0.505355  0
+
+#+begin_src python :results output :exports both :session visualization
+from sklearn.tree import DecisionTreeClassifier, export_text
+from sklearn.metrics import accuracy_score
+
+pick = [f'x{i+1}' for i in range(d)]
+X = df[pick]
+y = df.Y
+
+clf = DecisionTreeClassifier(criterion='entropy')
+clf.fit(X, y)
+
+y_pred = clf.predict(X)
+
+print("Accuracy: ", accuracy_score(y, y_pred))
+
+print(export_text(clf))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Accuracy:  1.0
+|--- feature_1 <= 0.61
+|   |--- feature_2 <= 0.42
+|   |   |--- class: 0
+|   |--- feature_2 >  0.42
+|   |   |--- feature_0 <= 0.55
+|   |   |   |--- feature_2 <= 0.99
+|   |   |   |   |--- feature_1 <= 0.50
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- feature_1 >  0.50
+|   |   |   |   |   |--- feature_0 <= 0.25
+|   |   |   |   |   |   |--- class: 0
+|   |   |   |   |   |--- feature_0 >  0.25
+|   |   |   |   |   |   |--- class: 1
+|   |   |   |--- feature_2 >  0.99
+|   |   |   |   |--- class: 1
+|   |   |--- feature_0 >  0.55
+|   |   |   |--- feature_2 <= 0.52
+|   |   |   |   |--- feature_1 <= 0.41
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- feature_1 >  0.41
+|   |   |   |   |   |--- class: 1
+|   |   |   |--- feature_2 >  0.52
+|   |   |   |   |--- class: 1
+|--- feature_1 >  0.61
+|   |--- feature_2 <= 0.16
+|   |   |--- feature_0 <= 0.73
+|   |   |   |--- class: 0
+|   |   |--- feature_0 >  0.73
+|   |   |   |--- class: 1
+|   |--- feature_2 >  0.16
+|   |   |--- class: 1
+#+end_example
+
+* Solution
+When their are only two possible inputs, the data can be visualizated in two dimensions as a diagonal line. Then the classifier is a series of logic that defines a line that can only go up and right that attempts to match that line as best as possible. Alternativly, it could be veiw as one large square that has many smaller squares comming out of it to catch points outside of it.
+
+[[./assets/include-squares-drawing.png]]
+
+
+In this drawing, you can image that our classifier includes all the green
+squares but we miss a point. We can fix this by drawing the blue square to
+include all the points. Each of these square takes two classifier to create. In
+addtion, you can see that together, the squares do not cover all of the area of
+on the right side of the line and even cover some of the left half. This is
+beacuse the classifier only needs to cover all of the points in the data. Each
+square takes two bounds to create and so the question we are now asking is how
+many squares need to be drawed to cover all the points.
+
+This intuition can be extened into 3 dimensions by thinking as the classifier as
+not squares by cubes that take 3 classifiers to define. However, each square has
+more space it fails to cover. Thinking in two dimensions there is the area to
+the left of the square and the area above it. In 3 demensionsm, there are 3 of
+these newly created.
+
+If we assume that it takes
+
+d!
+k!(d-k)!
+{\displaystyle {\binom {n}{k}}={\frac {n!}{k!(n-k)!}}.}
