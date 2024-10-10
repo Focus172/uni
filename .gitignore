@@ -1,8 +1,12 @@
-**/zig-cache
+**/.zig-cache
 **/zig-out
+**/.direnv
 **/build
+
+/csen-020/**/obj/
+/csen-020/**/output*
+
 /csci-062/socialnetwork.pro.user
-/csci-062/.direnv
 /csci-062/assets
 /csci-062/.ipynb_checkpoints
 /csci-062/lab/4/tmp
