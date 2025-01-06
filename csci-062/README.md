@@ -11,9 +11,9 @@ zig build run
 
 ### Ui
 requires qt >= 6
+
 ```bash
-mkdir build
-cd build
-qmake ..
-make
+./mk.sh
+# OR
+nix build
 ```

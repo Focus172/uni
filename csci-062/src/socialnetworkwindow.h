@@ -1,11 +1,55 @@
 #ifndef SOCIALNETWORKWINDOW_H
 #define SOCIALNETWORKWINDOW_H
 
-#include "network.h"
-#include "socialnetworkwindowui.h"
 #include <QAbstractItemView>
 #include <QMainWindow>
 #include <QStringListModel>
+#include <QtCore/QVariant>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QListView>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QStackedWidget>
+#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTableWidget>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
+
+#include "network/network.h"
+#include "pages/feedpage.h"
+#include "pages/loginpage.h"
+#include "pages/makepostpage.h"
+#include "pages/profilepage.h"
+
+QT_BEGIN_NAMESPACE
+
+class SocialNetworkWindowUi {
+public:
+  QWidget *centralwidget;
+  QGridLayout *grid;
+
+  QStackedWidget *viewstack;
+  LoginPage *loginpage;
+  ProfilePage *profilepage;
+  MakepostPage *makepostpage;
+  FeedPage *feedpage;
+
+  QMenuBar *menubar;
+  QStatusBar *statusbar;
+
+  SocialNetworkWindowUi(QMainWindow *, Network *);
+};
+
+QT_END_NAMESPACE
+
+/* *********************************************************************** */
 
 class SelectedUser {
 public:
@@ -36,23 +80,19 @@ struct CurrentUser {
 public:
   /// id of the logged in user
   int id;
-}
+};
 
 class SocialNetworkWindow : public QMainWindow {
   Q_OBJECT
 
 public:
-  SocialNetworkWindow(QWidget *parent = nullptr);
+  SocialNetworkWindow();
   ~SocialNetworkWindow();
 
-  void login();
-
   void showprofile(int user);
-  void gohome();
-  void addfriend();
+  void show_makepost();
 
-  void gofriend(int row, int col);
-  void addsuggestedfriend(int row, int col);
+  void add_post(Post *p);
 
 private:
   SocialNetworkWindowUi *ui;

@@ -4,26 +4,29 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 SOURCES += \
     src/main.cpp \
-    src/network.cpp \
-    src/post.cpp \
-    src/postwidget.cpp \
-    src/user.cpp \
+    src/network/network.cpp \
+    src/network/post.cpp \
+    src/network/user.cpp \
+    src/pages/makepostpage.cpp \
+    src/pages/loginpage.cpp \
+    src/pages/profilepage.cpp \
+    src/pages/feedpage.cpp \
     src/socialnetworkwindow.cpp
 
 HEADERS += \
-    src/network.h \
-    src/post.h \
-    src/postwidget.h \
-    src/user.h \
+    src/network/network.h \
+    src/network/post.h \
+    src/network/user.h \
+    src/pages/makepostpage.h \
+    src/pages/loginpage.h \
+    src/pages/profilepage.h \
+    src/widgets/post.hpp \
+    src/pages/feedpage.h \
     src/socialnetworkwindow.h
-
-# FORMS += src/socialnetworkwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

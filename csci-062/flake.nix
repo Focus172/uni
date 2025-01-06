@@ -32,10 +32,20 @@
           ];
           # shellHook = "jupyter notebook";
         };
-        qnetwork = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [ qt6.qmake ];
-          buildInputs = with pkgs; [];
-        };
       };
+        packages.qnetwork = pkgs.stdenv.mkDerivation {
+          pname = "social";
+          version = "0.1.0";
+
+          src = ./.;
+
+          nativeBuildInputs = with pkgs; [ qt6.qmake qt6.wrapQtAppsHook ];
+          buildInputs = [ ];
+
+          installPhase = ''
+            mkdir -p $out/bin
+            cp socialnetwork $out/bin/social
+          '';
+        };
     });
 }

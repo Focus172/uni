@@ -56,6 +56,36 @@ const PROJECTS: []const Project = &.{
         .sfiles = &.{"Lab3B-Implementation.s"},
         .tests = "Lab3B-Tests.zig",
     },
+    .{
+        .cfiles = &.{"Lab4C-Main.c"},
+        .sfiles = &.{"Lab4C-Implementation.s"},
+        .tests = "Lab4C-Tests.zig",
+    },
+    .{
+        .cfiles = &.{"Lab5C-Main.c"},
+        .sfiles = &.{"Lab5C-Implementation.s"},
+        .tests = "Lab5C-Tests.zig",
+    },
+    .{
+        .cfiles = &.{"Lab6C-Main.c"},
+        .sfiles = &.{"Lab6C-Implementation.s"},
+        .tests = "Lab6C-Tests.zig",
+    },
+    .{
+        .cfiles = &.{"Lab7C-Main.c"},
+        .sfiles = &.{"Lab7C-Implementation.s"},
+        .tests = "Lab7C-Tests.zig",
+    },
+    .{
+        .cfiles = &.{"Lab8C-Main.c"},
+        .sfiles = &.{"Lab8C-Resistors.s"},
+        .tests = "Lab8C-Tests.zig",
+    },
+    .{
+        .cfiles = &.{"Lab9C-Main.c"},
+        .sfiles = &.{"Lab9C-SunAndMoon.s"},
+        .tests = "Lab9C-Tests.zig",
+    },
 };
 
 pub fn build(b: *std.Build) void {
